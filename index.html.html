@@ -1,0 +1,909 @@
+<!DOCTYPE html>
+<!-- saved from url=(0058)file:///C:/Users/user/Downloads/dashboard_connected_4.html -->
+<html lang="he" dir="rtl"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>י״ב אלמוג – ניהול סיום שנה</title>
+<link href="./י״ב אלמוג – ניהול סיום שנה_files/css2" rel="stylesheet">
+<style>
+:root {
+  --bg:#f7f4ef; --surface:#fff; --surface2:#f0ebe2; --border:#e2d9cc;
+  --navy:#1a2744; --navy2:#243358;
+  --gold:#c8922a; --gold-light:#f0c060; --gold-dim:rgba(200,146,42,0.12);
+  --teal:#2a7a6e; --teal-dim:rgba(42,122,110,0.12);
+  --coral:#c0452a; --coral-dim:rgba(192,69,42,0.1);
+  --text:#1a2744; --text-mid:#4a5568; --text-muted:#8a9ab5;
+  --shadow:0 2px 16px rgba(26,39,68,0.08);
+  --shadow-lg:0 8px 40px rgba(26,39,68,0.14);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Heebo',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:14px;}
+
+/* TOPBAR */
+.topbar{background:var(--navy);padding:0 28px;display:flex;align-items:center;gap:0;height:58px;position:sticky;top:0;z-index:100;box-shadow:0 2px 20px rgba(0,0,0,0.25);}
+.logo{font-family:'Frank Ruhl Libre',serif;font-size:19px;font-weight:900;color:#fff;display:flex;align-items:center;gap:9px;flex-shrink:0;}
+.logo .badge{background:var(--gold);color:var(--navy);font-family:'Heebo',sans-serif;font-size:10px;font-weight:700;padding:3px 7px;border-radius:4px;}
+.nav{display:flex;margin-right:24px;gap:2px;flex:1;}
+.nav-btn{background:none;border:none;color:rgba(255,255,255,0.5);font-family:'Heebo',sans-serif;font-size:13px;font-weight:500;padding:6px 14px;border-radius:6px;cursor:pointer;transition:all .18s;white-space:nowrap;}
+.nav-btn:hover{background:rgba(255,255,255,0.08);color:#fff;}
+.nav-btn.active{background:rgba(200,146,42,0.2);color:var(--gold-light);}
+.user-sel{display:flex;align-items:center;gap:7px;margin-right:auto;}
+.user-lbl{color:rgba(255,255,255,0.45);font-size:12px;}
+.user-select{background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.15);color:#fff;padding:5px 10px;border-radius:6px;font-family:'Heebo',sans-serif;font-size:13px;cursor:pointer;outline:none;}
+
+/* SYNC BAR */
+.sync-bar{background:#1e3a5f;border-bottom:1px solid rgba(200,146,42,0.3);padding:7px 28px;display:flex;align-items:center;gap:10px;font-size:12px;color:rgba(255,255,255,0.6);}
+.sync-dot{width:7px;height:7px;border-radius:50%;background:#34d399;flex-shrink:0;}
+.sync-dot.err{background:#fb7185;}
+.sync-dot.loading{background:var(--gold);animation:pulse 1s infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.4;}}
+.api-setup{display:flex;align-items:center;gap:8px;flex:1;}
+.api-input{background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:#fff;padding:4px 10px;border-radius:5px;font-family:'Heebo',sans-serif;font-size:12px;width:420px;outline:none;}
+.api-input::placeholder{color:rgba(255,255,255,0.35);}
+.save-url-btn{background:var(--gold);color:var(--navy);border:none;padding:4px 12px;border-radius:5px;font-family:'Heebo',sans-serif;font-size:12px;font-weight:700;cursor:pointer;}
+
+/* VIEWS */
+.view{display:none;padding:26px 28px 60px;max-width:1380px;margin:0 auto;}
+.view.active{display:block;}
+.sec-title{font-family:'Frank Ruhl Libre',serif;font-size:21px;font-weight:700;color:var(--navy);margin-bottom:18px;display:flex;align-items:center;gap:10px;}
+.sec-title .line{flex:1;height:1px;background:var(--border);}
+
+/* STATS */
+.stats-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:13px;margin-bottom:26px;}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:13px;padding:16px 18px;box-shadow:var(--shadow);}
+.stat-val{font-size:30px;font-weight:900;line-height:1;color:var(--navy);}
+.stat-val.gold{color:var(--gold);}
+.stat-val.teal{color:var(--teal);}
+.stat-val.coral{color:var(--coral);}
+.stat-lbl{font-size:11px;color:var(--text-muted);margin-top:5px;font-weight:500;}
+
+/* CALENDAR */
+.cal-wrapper{background:var(--surface);border:1px solid var(--border);border-radius:15px;overflow:hidden;box-shadow:var(--shadow);}
+.cal-head{background:var(--navy);padding:13px 20px;display:flex;align-items:center;justify-content:space-between;}
+.cal-head h3{color:#fff;font-size:14px;font-weight:700;}
+.weeks{padding:18px 20px;overflow-x:auto;}
+.day-names-row{display:grid;grid-template-columns:60px repeat(7,1fr);gap:5px;margin-bottom:4px;min-width:640px;}
+.day-name{text-align:center;font-size:10px;font-weight:700;color:var(--text-muted);letter-spacing:1px;padding:2px 0;}
+.week-row{display:grid;grid-template-columns:60px repeat(7,1fr);gap:5px;margin-bottom:8px;min-width:640px;}
+.wk-lbl{font-size:9px;font-weight:700;color:var(--text-muted);text-align:center;padding:5px 0;display:flex;align-items:center;justify-content:center;}
+.day-cell{border-radius:7px;padding:5px 7px;min-height:50px;border:1px solid var(--border);background:var(--bg);font-size:10px;cursor:pointer;transition:border-color .15s;}
+.day-cell:hover{border-color:var(--gold);}
+.day-cell.today{border-color:var(--gold);background:var(--gold-dim);}
+.day-num{font-size:10px;font-weight:700;color:var(--text-muted);margin-bottom:3px;}
+.day-cell.today .day-num{color:var(--gold);}
+.ev-chip{border-radius:3px;padding:2px 5px;font-size:9px;font-weight:600;margin-bottom:2px;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;display:block;}
+.chip-event{background:#dbeafe;color:#1e40af;}
+.chip-shabbat{background:#fce7f3;color:#9d174d;}
+.chip-deadline{background:#fee2e2;color:#991b1b;}
+.chip-task{background:var(--teal-dim);color:var(--teal);border:1px solid rgba(42,122,110,0.2);}
+.month-div{background:var(--navy);color:rgba(255,255,255,0.7);font-size:10px;font-weight:700;padding:5px 13px;border-radius:5px;margin:12px 0 7px;letter-spacing:1.5px;width:fit-content;}
+
+/* TASKS */
+.board-ctrls{display:flex;gap:9px;flex-wrap:wrap;margin-bottom:18px;align-items:center;}
+.board-ctrls select,.board-ctrls input{background:var(--surface);border:1px solid var(--border);color:var(--text);padding:7px 12px;border-radius:7px;font-family:'Heebo',sans-serif;font-size:13px;outline:none;}
+.board-ctrls input{flex:1;min-width:180px;}
+.new-task-btn{background:var(--navy);color:#fff;border:none;padding:8px 18px;border-radius:7px;font-family:'Heebo',sans-serif;font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:5px;}
+.new-task-btn:hover{background:var(--navy2);}
+.tasks-list{display:flex;flex-direction:column;gap:11px;}
+.parent-task{background:var(--surface);border:1px solid var(--border);border-radius:13px;overflow:hidden;box-shadow:var(--shadow);}
+.pt-header{padding:13px 17px;display:flex;align-items:center;gap:11px;cursor:pointer;user-select:none;transition:background .15s;}
+.pt-header:hover{background:var(--bg);}
+.toggle{color:var(--text-muted);font-size:10px;transition:transform .2s;}
+.parent-task.open .toggle{transform:rotate(90deg);}
+.color-dot{width:11px;height:11px;border-radius:50%;flex-shrink:0;}
+.pt-title{flex:1;font-size:14px;font-weight:700;}
+.meta-row{display:flex;align-items:center;gap:7px;flex-wrap:wrap;}
+.ass-badge{padding:2px 9px;border-radius:11px;font-size:10px;font-weight:700;color:#fff;}
+.status-badge{padding:2px 9px;border-radius:11px;font-size:10px;font-weight:600;}
+.s-todo{background:#f1f5f9;color:#64748b;}
+.s-doing{background:#fef3c7;color:#92400e;}
+.s-done{background:#d1fae5;color:#065f46;}
+.date-badge{font-size:10px;color:var(--text-muted);display:flex;align-items:center;gap:3px;}
+.date-badge.urgent{color:var(--coral);font-weight:600;}
+.del-btn{background:none;border:none;color:#cbd5e1;font-size:13px;cursor:pointer;padding:2px 5px;border-radius:3px;transition:color .15s,background .15s;}
+.del-btn:hover{color:var(--coral);background:var(--coral-dim);}
+.subs-container{display:none;padding:0 17px 13px;border-top:1px solid var(--border);}
+.parent-task.open .subs-container{display:block;}
+.sub-row{display:flex;align-items:center;gap:9px;padding:8px 0;border-bottom:1px solid var(--surface2);font-size:12px;}
+.sub-row:last-child{border-bottom:none;}
+.sub-check{width:15px;height:15px;border-radius:3px;border:2px solid var(--border);cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .15s;}
+.sub-check.checked{background:var(--teal);border-color:var(--teal);}
+.sub-check.checked::after{content:'✓';color:#fff;font-size:9px;font-weight:700;}
+.sub-text{flex:1;}
+.sub-text.done{text-decoration:line-through;color:var(--text-muted);}
+.sub-date{font-size:10px;color:var(--text-muted);white-space:nowrap;}
+.add-sub-row{display:flex;gap:5px;margin-top:9px;align-items:center;flex-wrap:wrap;}
+.add-sub-input{flex:1;min-width:140px;border:1px dashed var(--border);border-radius:5px;padding:5px 9px;font-family:'Heebo',sans-serif;font-size:12px;background:var(--bg);color:var(--text);outline:none;}
+.add-sub-input:focus{border-color:var(--gold);}
+.mini-sel{border:1px solid var(--border);border-radius:5px;padding:4px 7px;font-family:'Heebo',sans-serif;font-size:11px;background:var(--bg);color:var(--text);}
+.mini-btn{background:var(--gold);border:none;color:var(--navy);padding:5px 10px;border-radius:5px;font-family:'Heebo',sans-serif;font-size:11px;font-weight:700;cursor:pointer;}
+.loading-tasks{text-align:center;padding:40px;color:var(--text-muted);font-size:14px;}
+
+/* TEAM */
+.member-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:15px;}
+.m-card{background:var(--surface);border:1px solid var(--border);border-radius:15px;padding:20px;box-shadow:var(--shadow);}
+.m-head{display:flex;align-items:center;gap:13px;margin-bottom:14px;}
+.m-avatar{width:46px;height:46px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:19px;font-weight:900;color:#fff;flex-shrink:0;}
+.m-name{font-size:17px;font-weight:700;}
+.m-role{font-size:11px;color:var(--text-muted);}
+.prog-lbl{display:flex;justify-content:space-between;font-size:11px;color:var(--text-muted);margin-bottom:4px;}
+.prog-bg{background:var(--border);border-radius:9px;height:7px;}
+.prog-fill{height:7px;border-radius:9px;transition:width .6s ease;}
+.m-task-item{padding:4px 0;border-bottom:1px solid var(--surface2);display:flex;align-items:center;gap:5px;font-size:12px;}
+.m-task-item:last-child{border-bottom:none;}
+
+/* MODAL */
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(26,39,68,0.6);backdrop-filter:blur(4px);z-index:200;align-items:center;justify-content:center;}
+.modal-bg.open{display:flex;}
+.modal{background:var(--surface);border-radius:18px;padding:28px;width:100%;max-width:500px;box-shadow:var(--shadow-lg);direction:rtl;animation:slideUp .22s ease;}
+@keyframes slideUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+.modal h2{font-family:'Frank Ruhl Libre',serif;font-size:20px;font-weight:700;margin-bottom:18px;}
+.fg{margin-bottom:12px;}
+.fl{font-size:11px;font-weight:700;color:var(--text-muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px;display:block;}
+.fi,.fsel,.fta{width:100%;border:1px solid var(--border);border-radius:7px;padding:8px 11px;font-family:'Heebo',sans-serif;font-size:13px;background:var(--bg);color:var(--text);outline:none;transition:border-color .15s;}
+.fi:focus,.fsel:focus,.fta:focus{border-color:var(--gold);}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:11px;}
+.m-actions{display:flex;gap:9px;margin-top:20px;justify-content:flex-end;}
+.btn-p{background:var(--navy);color:#fff;border:none;padding:9px 22px;border-radius:7px;font-family:'Heebo',sans-serif;font-size:13px;font-weight:700;cursor:pointer;}
+.btn-p:hover{background:var(--navy2);}
+.btn-s{background:var(--bg);color:var(--text-mid);border:1px solid var(--border);padding:9px 18px;border-radius:7px;font-family:'Heebo',sans-serif;font-size:13px;cursor:pointer;}
+.type-row{display:flex;gap:7px;flex-wrap:wrap;}
+.type-chip{padding:5px 13px;border-radius:18px;border:2px solid var(--border);font-size:12px;font-weight:600;cursor:pointer;transition:all .15s;background:var(--bg);}
+.type-chip.sel{border-color:var(--navy);background:var(--navy);color:#fff;}
+
+/* TOAST */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--navy);color:#fff;padding:10px 22px;border-radius:9px;font-size:13px;z-index:999;opacity:0;transition:opacity .3s;pointer-events:none;}
+.toast.show{opacity:1;}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="logo">
+    <span>י״ב אלמוג</span>
+    <span class="badge">סיום שנה</span>
+  </div>
+  <div class="nav">
+    <button class="nav-btn active" onclick="showView(&#39;overview&#39;,this)">🏠 סקירה</button>
+    <button class="nav-btn" onclick="showView(&#39;calendar&#39;,this)">📅 לו״ז</button>
+    <button class="nav-btn" onclick="showView(&#39;tasks&#39;,this)">✅ משימות</button>
+    <button class="nav-btn" onclick="showView(&#39;team&#39;,this)">👥 צוות</button>
+  </div>
+  <div class="user-sel">
+    <span class="user-lbl">מחובר:</span>
+    <select class="user-select" id="cur-user" onchange="currentUser=this.value">
+      <option>עמי</option><option>חני</option><option>אודי</option><option>גיא</option><option>אלעד</option>
+    </select>
+  </div>
+</div>
+
+<div class="sync-bar" id="sync-bar">
+  <div class="sync-dot loading" id="sync-dot"></div>
+  <div class="api-setup">
+    <span id="sync-label">הכנס כתובת Apps Script:</span>
+    <input class="api-input" id="api-url" placeholder="https://script.google.com/macros/s/XXXX/exec" value="">
+    <button class="save-url-btn" onclick="saveApiUrl()">חבר</button>
+  </div>
+  <span id="sync-status" style="margin-right:auto;font-size:11px;"></span>
+  <button onclick="loadAll()" style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:#fff;padding:3px 10px;border-radius:4px;font-size:11px;cursor:pointer;">↻ רענן</button>
+</div>
+
+<!-- ═══ OVERVIEW ═══ -->
+<div class="view active" id="view-overview">
+  <div class="stats-row">
+    <div class="stat-card"><div class="stat-val gold" id="st-events">20</div><div class="stat-lbl">אירועים</div></div>
+    <div class="stat-card"><div class="stat-val" id="st-tasks">5</div><div class="stat-lbl">משימות פעילות</div></div>
+    <div class="stat-card"><div class="stat-val teal" id="st-done">0</div><div class="stat-lbl">הושלמו</div></div>
+    <div class="stat-card"><div class="stat-val coral" id="st-urgent">0</div><div class="stat-lbl">דחוף השבוע</div></div>
+    <div class="stat-card"><div class="stat-val" id="st-days">60</div><div class="stat-lbl">ימים לטקס סיום</div></div>
+  </div>
+  <div class="sec-title">אירועים קרובים <span class="line"></span></div>
+  <div id="upcoming" style="display:flex;flex-direction:column;gap:9px;margin-bottom:26px;">
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:11px;padding:13px 17px;display:flex;align-items:center;gap:14px;box-shadow:var(--shadow);">
+        <div style="text-align:center;background:var(--navy);color:#fff;border-radius:9px;padding:7px 12px;min-width:52px;">
+          <div style="font-size:16px;font-weight:900;">20</div>
+          <div style="font-size:9px;opacity:.65;">אפר</div>
+        </div>
+        <div style="flex:1;">
+          <div style="font-size:14px;font-weight:700;">טקס יום הזיכרון</div>
+          
+        </div>
+        <div style="font-size:11px;color:var(--coral);">עוד 2 ימים</div>
+        <span class="ev-chip chip-event" style="font-size:10px;padding:3px 9px;">אירוע</span>
+      </div>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:11px;padding:13px 17px;display:flex;align-items:center;gap:14px;box-shadow:var(--shadow);">
+        <div style="text-align:center;background:var(--navy);color:#fff;border-radius:9px;padding:7px 12px;min-width:52px;">
+          <div style="font-size:16px;font-weight:900;">21</div>
+          <div style="font-size:9px;opacity:.65;">אפר</div>
+        </div>
+        <div style="flex:1;">
+          <div style="font-size:14px;font-weight:700;">יום הזיכרון</div>
+          
+        </div>
+        <div style="font-size:11px;color:var(--coral);">עוד 3 ימים</div>
+        <span class="ev-chip chip-event" style="font-size:10px;padding:3px 9px;">אירוע</span>
+      </div>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:11px;padding:13px 17px;display:flex;align-items:center;gap:14px;box-shadow:var(--shadow);">
+        <div style="text-align:center;background:var(--navy);color:#fff;border-radius:9px;padding:7px 12px;min-width:52px;">
+          <div style="font-size:16px;font-weight:900;">22</div>
+          <div style="font-size:9px;opacity:.65;">אפר</div>
+        </div>
+        <div style="flex:1;">
+          <div style="font-size:14px;font-weight:700;">יום העצמאות</div>
+          
+        </div>
+        <div style="font-size:11px;color:var(--text-muted);">עוד 4 ימים</div>
+        <span class="ev-chip chip-event" style="font-size:10px;padding:3px 9px;">אירוע</span>
+      </div>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:11px;padding:13px 17px;display:flex;align-items:center;gap:14px;box-shadow:var(--shadow);">
+        <div style="text-align:center;background:var(--navy);color:#fff;border-radius:9px;padding:7px 12px;min-width:52px;">
+          <div style="font-size:16px;font-weight:900;">27</div>
+          <div style="font-size:9px;opacity:.65;">אפר</div>
+        </div>
+        <div style="flex:1;">
+          <div style="font-size:14px;font-weight:700;">שיחת רכז</div>
+          
+        </div>
+        <div style="font-size:11px;color:var(--text-muted);">עוד 9 ימים</div>
+        <span class="ev-chip chip-deadline" style="font-size:10px;padding:3px 9px;">דד-ליין</span>
+      </div>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:11px;padding:13px 17px;display:flex;align-items:center;gap:14px;box-shadow:var(--shadow);">
+        <div style="text-align:center;background:var(--navy);color:#fff;border-radius:9px;padding:7px 12px;min-width:52px;">
+          <div style="font-size:16px;font-weight:900;">29</div>
+          <div style="font-size:9px;opacity:.65;">אפר</div>
+        </div>
+        <div style="flex:1;">
+          <div style="font-size:14px;font-weight:700;">פעילות פרידה</div>
+          
+        </div>
+        <div style="font-size:11px;color:var(--text-muted);">עוד 11 ימים</div>
+        <span class="ev-chip chip-event" style="font-size:10px;padding:3px 9px;">אירוע</span>
+      </div>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:11px;padding:13px 17px;display:flex;align-items:center;gap:14px;box-shadow:var(--shadow);">
+        <div style="text-align:center;background:var(--navy);color:#fff;border-radius:9px;padding:7px 12px;min-width:52px;">
+          <div style="font-size:16px;font-weight:900;">1</div>
+          <div style="font-size:9px;opacity:.65;">מאי</div>
+        </div>
+        <div style="flex:1;">
+          <div style="font-size:14px;font-weight:700;">שליחת חומרים לספר מחזור</div>
+          
+        </div>
+        <div style="font-size:11px;color:var(--text-muted);">עוד 13 ימים</div>
+        <span class="ev-chip chip-deadline" style="font-size:10px;padding:3px 9px;">דד-ליין</span>
+      </div></div>
+  <div class="sec-title">משימות דחופות <span class="line"></span></div>
+  <div id="urgent-tasks" style="display:flex;flex-direction:column;gap:7px;"><div style="color:var(--text-muted);font-size:13px;">אין משימות דחופות השבוע 🎉</div></div>
+</div>
+
+<!-- ═══ CALENDAR ═══ -->
+<div class="view" id="view-calendar">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;flex-wrap:wrap;gap:10px;">
+    <div class="sec-title" style="margin-bottom:0;">לוח אירועים – אפריל–יוני 2026 <span class="line"></span></div>
+    <button class="new-task-btn" onclick="openEventModal()">+ הוסף אירוע</button>
+  </div>
+  <div class="cal-wrapper">
+    <div class="weeks" id="cal-grid"></div>
+  </div>
+</div>
+
+<!-- ═══ TASKS ═══ -->
+<div class="view" id="view-tasks">
+  <div class="board-ctrls">
+    <select id="f-ass" onchange="renderTasks()">
+      <option value="all">כל הצוות</option>
+      <option>עמי</option><option>חני</option><option>אודי</option><option>גיא</option><option>אלעד</option>
+    </select>
+    <select id="f-status" onchange="renderTasks()">
+      <option value="all">כל הסטטוסים</option>
+      <option>לביצוע</option><option>בתהליך</option><option>הושלם</option>
+    </select>
+    <input type="text" id="f-search" placeholder="חיפוש..." oninput="renderTasks()">
+    <button class="new-task-btn" onclick="openTaskModal()">+ משימה חדשה</button>
+  </div>
+  <div class="tasks-list" id="tasks-list"><div class="loading-tasks">טוען נתונים מ-Google Sheets...</div></div>
+</div>
+
+<!-- ═══ TEAM ═══ -->
+<div class="view" id="view-team">
+  <div class="sec-title">מצב הצוות <span class="line"></span></div>
+  <div class="member-grid" id="team-grid"></div>
+</div>
+
+<!-- MODAL TASK -->
+<div class="modal-bg" id="m-task">
+  <div class="modal">
+    <h2 id="mt-title">משימה חדשה</h2>
+    <input type="hidden" id="mt-id">
+    <div class="fg"><label class="fl">שם המשימה</label><input class="fi" id="mt-name" placeholder="שם האירוע / פרויקט..."></div>
+    <div class="frow">
+      <div class="fg"><label class="fl">אחראי</label>
+        <select class="fsel" id="mt-ass"><option>עמי</option><option>חני</option><option>אודי</option><option>גיא</option><option>אלעד</option></select>
+      </div>
+      <div class="fg"><label class="fl">סטטוס</label>
+        <select class="fsel" id="mt-status"><option>לביצוע</option><option>בתהליך</option><option>הושלם</option></select>
+      </div>
+    </div>
+    <div class="frow">
+      <div class="fg"><label class="fl">תאריך יעד</label><input class="fi" type="date" id="mt-date"></div>
+      <div class="fg"><label class="fl">שעה</label><input class="fi" type="time" id="mt-time"></div>
+    </div>
+    <div class="fg"><label class="fl">הערות</label><textarea class="fta" id="mt-notes" rows="2" placeholder="פרטים נוספים..."></textarea></div>
+    <div class="m-actions">
+      <button class="btn-s" onclick="closeModal(&#39;m-task&#39;)">ביטול</button>
+      <button class="btn-p" onclick="saveTask()">שמור</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL EVENT -->
+<div class="modal-bg" id="m-event">
+  <div class="modal">
+    <h2>הוסף אירוע ללו״ז</h2>
+    <div class="fg"><label class="fl">שם האירוע</label><input class="fi" id="me-title" placeholder="שם האירוע..."></div>
+    <div class="frow">
+      <div class="fg"><label class="fl">תאריך</label><input class="fi" type="date" id="me-date"></div>
+      <div class="fg"><label class="fl">שעה</label><input class="fi" type="time" id="me-time"></div>
+    </div>
+    <div class="fg">
+      <label class="fl">סוג</label>
+      <div class="type-row">
+        <div class="type-chip sel" data-type="event" onclick="selType(this)">אירוע</div>
+        <div class="type-chip" data-type="shabbat" onclick="selType(this)">שבת</div>
+        <div class="type-chip" data-type="deadline" onclick="selType(this)">דד-ליין</div>
+        <div class="type-chip" data-type="task" onclick="selType(this)">משימה</div>
+      </div>
+    </div>
+    <div class="fg"><label class="fl">הערות</label><input class="fi" id="me-notes" placeholder="פרטים נוספים..."></div>
+    <div class="m-actions">
+      <button class="btn-s" onclick="closeModal(&#39;m-event&#39;)">ביטול</button>
+      <button class="btn-p" onclick="saveEvent()">הוסף</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ══════════════════════════════
+// CONFIG & STATE
+// ══════════════════════════════
+const COLORS = {עמי:'#1a2744',חני:'#2a7a6e',אודי:'#c8922a',גיא:'#7c3aed',אלעד:'#c0452a'};
+const MONTHS = {4:'אפריל',5:'מאי',6:'יוני'};
+const DAYS   = ['א׳','ב׳','ג׳','ד׳','ה׳','ו׳','ש׳'];
+
+let currentUser = 'עמי';
+let API_URL = localStorage.getItem('yb_api_url') || '';
+let eventsCache = [];
+let tasksCache  = [];
+
+// Restore URL if saved
+if (API_URL) { document.getElementById('api-url').value = API_URL; }
+
+// ══════════════════════════════
+// API HELPERS
+// ══════════════════════════════
+function setSyncState(state, msg='') {
+  const dot = document.getElementById('sync-dot');
+  const lbl = document.getElementById('sync-status');
+  dot.className = 'sync-dot ' + (state==='ok'?'':state==='err'?'err':'loading');
+  lbl.textContent = msg;
+}
+
+async function apiGet(params) {
+  if (!API_URL) return null;
+  const url = API_URL + '?' + new URLSearchParams(params);
+  const r = await fetch(url);
+  if (!r.ok) throw new Error('HTTP '+r.status);
+  return r.json();
+}
+
+async function apiPost(body) {
+  if (!API_URL) return null;
+  const r = await fetch(API_URL, {
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body: JSON.stringify(body)
+  });
+  if (!r.ok) throw new Error('HTTP '+r.status);
+  return r.json();
+}
+
+function saveApiUrl() {
+  const url = document.getElementById('api-url').value.trim();
+  if (!url) return;
+  API_URL = url;
+  localStorage.setItem('yb_api_url', url);
+  document.getElementById('sync-label').textContent = 'מחובר ל-Google Sheets';
+  loadAll();
+}
+
+async function loadAll() {
+  if (!API_URL) { loadFromLocal(); return; }
+  setSyncState('loading','טוען...');
+  try {
+    const data = await apiGet({action:'getAll'});
+    if (data.error) throw new Error(data.error);
+    eventsCache = data.events || [];
+    tasksCache  = data.tasks  || [];
+    setSyncState('ok','עודכן: '+new Date().toLocaleTimeString('he'));
+    renderAll();
+    toast('נתונים נטענו מ-Google Sheets ✓');
+  } catch(e) {
+    setSyncState('err','שגיאת חיבור – משתמש בנתונים מקומיים');
+    loadFromLocal();
+  }
+}
+
+function loadFromLocal() {
+  try { eventsCache = JSON.parse(localStorage.getItem('yb_events')) || getDefaultEvents(); } catch { eventsCache = getDefaultEvents(); }
+  try { tasksCache  = JSON.parse(localStorage.getItem('yb_tasks'))  || getDefaultTasks();  } catch { tasksCache  = getDefaultTasks();  }
+  renderAll();
+}
+
+function saveLocal() {
+  localStorage.setItem('yb_events', JSON.stringify(eventsCache));
+  localStorage.setItem('yb_tasks',  JSON.stringify(tasksCache));
+}
+
+function renderAll() {
+  renderOverview();
+  const active = document.querySelector('.view.active');
+  if (active?.id==='view-calendar') renderCalendar();
+  if (active?.id==='view-tasks')    renderTasks();
+  if (active?.id==='view-team')     renderTeam();
+}
+
+// ══════════════════════════════
+// NAV
+// ══════════════════════════════
+function showView(name, btn) {
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('view-'+name).classList.add('active');
+  if (btn) btn.classList.add('active');
+  if (name==='overview') renderOverview();
+  if (name==='calendar') renderCalendar();
+  if (name==='tasks')    renderTasks();
+  if (name==='team')     renderTeam();
+}
+
+// ══════════════════════════════
+// OVERVIEW
+// ══════════════════════════════
+function renderOverview() {
+  const today = new Date(); today.setHours(0,0,0,0);
+  const end   = new Date('2026-06-17');
+  const days  = Math.max(0, Math.ceil((end-today)/86400000));
+  const allSubs = tasksCache.flatMap(t=>t.subtasks||[]);
+  const weekEnd = new Date(today); weekEnd.setDate(weekEnd.getDate()+7);
+  const urgent = tasksCache.filter(t=>{
+    const d=new Date(t.date); return d>=today&&d<=weekEnd&&t.status!=='הושלם';
+  });
+
+  document.getElementById('st-events').textContent = eventsCache.length;
+  document.getElementById('st-tasks').textContent  = tasksCache.filter(t=>t.status!=='הושלם').length;
+  document.getElementById('st-done').textContent   = allSubs.filter(s=>s.done).length;
+  document.getElementById('st-urgent').textContent = urgent.length;
+  document.getElementById('st-days').textContent   = days;
+
+  const up = eventsCache
+    .filter(e=>new Date(e.date)>=today)
+    .sort((a,b)=>new Date(a.date)-new Date(b.date))
+    .slice(0,6);
+
+  const upEl = document.getElementById('upcoming');
+  upEl.innerHTML = '';
+  up.forEach(ev=>{
+    const d = new Date(ev.date);
+    const away = Math.ceil((d-today)/86400000);
+    const chipCls = ev.type==='shabbat'?'chip-shabbat':ev.type==='deadline'?'chip-deadline':'chip-event';
+    upEl.innerHTML += `
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:11px;padding:13px 17px;display:flex;align-items:center;gap:14px;box-shadow:var(--shadow);">
+        <div style="text-align:center;background:var(--navy);color:#fff;border-radius:9px;padding:7px 12px;min-width:52px;">
+          <div style="font-size:16px;font-weight:900;">${d.getDate()}</div>
+          <div style="font-size:9px;opacity:.65;">${['ינו','פבר','מרץ','אפר','מאי','יוני','יולי','אוג','ספט','אוק','נוב','דצמ'][d.getMonth()]}</div>
+        </div>
+        <div style="flex:1;">
+          <div style="font-size:14px;font-weight:700;">${ev.title}</div>
+          ${ev.notes?`<div style="font-size:11px;color:var(--text-muted);">${ev.notes}</div>`:''}
+        </div>
+        <div style="font-size:11px;color:${away<=3?'var(--coral)':'var(--text-muted)'};">${away===0?'היום':away===1?'מחר':'עוד '+away+' ימים'}</div>
+        <span class="ev-chip ${chipCls}" style="font-size:10px;padding:3px 9px;">${ev.type==='shabbat'?'שבת':ev.type==='deadline'?'דד-ליין':'אירוע'}</span>
+      </div>`;
+  });
+
+  const urgEl = document.getElementById('urgent-tasks');
+  urgEl.innerHTML = '';
+  if (!urgent.length) { urgEl.innerHTML='<div style="color:var(--text-muted);font-size:13px;">אין משימות דחופות השבוע 🎉</div>'; return; }
+  urgent.forEach(t=>{
+    urgEl.innerHTML+=`<div style="background:var(--surface);border:1px solid var(--border);border-right:4px solid ${COLORS[t.assignee]||'#666'};border-radius:9px;padding:11px 15px;display:flex;align-items:center;gap:11px;">
+      <div style="flex:1;font-weight:600;font-size:13px;">${t.title}</div>
+      <span style="background:${COLORS[t.assignee]};color:#fff;border-radius:11px;padding:2px 9px;font-size:10px;font-weight:700;">${t.assignee}</span>
+      <span style="font-size:11px;color:var(--coral);">${t.date}</span>
+    </div>`;
+  });
+}
+
+// ══════════════════════════════
+// CALENDAR
+// ══════════════════════════════
+function renderCalendar() {
+  const grid = document.getElementById('cal-grid');
+  grid.innerHTML = '';
+  const evMap = {};
+  eventsCache.forEach(e=>{ (evMap[e.date]||(evMap[e.date]=[])).push(e); });
+  tasksCache.forEach(t=>{
+    (evMap[t.date]||(evMap[t.date]=[])).push({...t,type:'task',title:'📌 '+t.title});
+    (t.subtasks||[]).forEach(s=>{
+      if(s.date)(evMap[s.date]||(evMap[s.date]=[])).push({...s,type:'task',title:'▸ '+s.title});
+    });
+  });
+
+  const start = new Date('2026-04-12');
+  const end   = new Date('2026-06-22');
+  const today = new Date(); today.setHours(0,0,0,0);
+  let cur = new Date(start), lastM = -1;
+
+  const hdr = document.createElement('div');
+  hdr.className = 'day-names-row';
+  hdr.innerHTML = '<div></div>'+DAYS.map(d=>`<div class="day-name">${d}</div>`).join('');
+  grid.appendChild(hdr);
+
+  while (cur < end) {
+    const m = cur.getMonth()+1;
+    if (m!==lastM) {
+      lastM=m;
+      const md=document.createElement('div');
+      md.className='month-div';
+      md.textContent=MONTHS[m]||'';
+      grid.appendChild(md);
+    }
+    const row=document.createElement('div');
+    row.className='week-row';
+    const wl=document.createElement('div');
+    wl.className='wk-lbl';
+    wl.innerHTML=`<span style="font-size:9px;">${cur.getDate()}/${cur.getMonth()+1}</span>`;
+    row.appendChild(wl);
+    for(let d=0;d<7;d++){
+      const cell=document.createElement('div');
+      const ds=cur.toISOString().split('T')[0];
+      cell.className='day-cell'+(cur.getTime()===today.getTime()?' today':'');
+      cell.innerHTML=`<div class="day-num">${cur.getDate()}</div>`;
+      (evMap[ds]||[]).forEach(e=>{
+        const chip=document.createElement('span');
+        chip.className='ev-chip '+(e.type==='shabbat'?'chip-shabbat':e.type==='deadline'?'chip-deadline':e.type==='task'?'chip-task':'chip-event');
+        chip.textContent=e.title;
+        if(e.id?.startsWith('e')) chip.onclick=ev=>{ev.stopPropagation();if(confirm('למחוק אירוע זה?'))deleteEvent(e.id);};
+        cell.appendChild(chip);
+      });
+      cell.ondblclick=()=>{ document.getElementById('me-date').value=ds; openEventModal(); };
+      row.appendChild(cell);
+      cur.setDate(cur.getDate()+1);
+    }
+    grid.appendChild(row);
+  }
+}
+
+// ══════════════════════════════
+// TASKS
+// ══════════════════════════════
+function renderTasks() {
+  const fa=document.getElementById('f-ass').value;
+  const fs=document.getElementById('f-status').value;
+  const fq=(document.getElementById('f-search').value||'').toLowerCase();
+  const list=document.getElementById('tasks-list');
+  list.innerHTML='';
+
+  const filtered=tasksCache.filter(t=>{
+    if(fa!=='all'&&t.assignee!==fa)return false;
+    if(fs!=='all'&&t.status!==fs)return false;
+    if(fq&&!t.title.toLowerCase().includes(fq))return false;
+    return true;
+  });
+
+  if(!filtered.length){list.innerHTML='<div class="loading-tasks">לא נמצאו משימות</div>';return;}
+
+  filtered.forEach(task=>{
+    const color=COLORS[task.assignee]||'#666';
+    const sc=task.status==='הושלם'?'s-done':task.status==='בתהליך'?'s-doing':'s-todo';
+    const today=new Date();today.setHours(0,0,0,0);
+    const td=new Date(task.date);
+    const isU=td>=today&&(td-today)/86400000<=7&&task.status!=='הושלם';
+    const doneSubs=(task.subtasks||[]).filter(s=>s.done).length;
+    const el=document.createElement('div');
+    el.className='parent-task';
+    el.id='pt-'+task.id;
+    el.innerHTML=`
+      <div class="pt-header" onclick="toggleTask('${task.id}')">
+        <span class="toggle">▶</span>
+        <div class="color-dot" style="background:${color}"></div>
+        <div class="pt-title">${task.title}</div>
+        <div style="font-size:10px;color:var(--text-muted);margin-left:6px;">${doneSubs}/${(task.subtasks||[]).length}</div>
+        <div class="meta-row">
+          <span class="ass-badge" style="background:${color}">${task.assignee}</span>
+          <span class="status-badge ${sc}">${task.status}</span>
+          <span class="date-badge${isU?' urgent':''}">${task.date}${task.time?' '+task.time:''}</span>
+          <button class="del-btn" onclick="event.stopPropagation();editTask('${task.id}')">✏️</button>
+          <button class="del-btn" onclick="event.stopPropagation();deleteTask('${task.id}')">🗑️</button>
+        </div>
+      </div>
+      <div class="subs-container" id="sc-${task.id}">
+        ${!(task.subtasks||[]).length?'<div style="color:var(--text-muted);font-size:12px;padding:9px 0;">אין משימות משנה עדיין</div>':''}
+        ${(task.subtasks||[]).map(s=>renderSub(s,task.id)).join('')}
+        <div class="add-sub-row">
+          <input class="add-sub-input" id="ns-${task.id}" placeholder="משימת משנה מהירה...">
+          <select class="mini-sel" id="ns-ass-${task.id}">
+            ${['עמי','חני','אודי','גיא','אלעד'].map(m=>`<option>${m}</option>`).join('')}
+          </select>
+          <input type="date" id="ns-date-${task.id}" class="mini-sel">
+          <button class="mini-btn" onclick="quickAddSub('${task.id}')">+ הוסף</button>
+        </div>
+      </div>`;
+    list.appendChild(el);
+  });
+}
+
+function renderSub(s,pid){
+  const color=COLORS[s.assignee]||'#666';
+  return `<div class="sub-row" id="sr-${s.id}">
+    <div class="sub-check${s.done?' checked':''}" onclick="toggleSub('${pid}','${s.id}')"></div>
+    <div class="sub-text${s.done?' done':''}">${s.title}</div>
+    <span style="font-size:10px;font-weight:700;color:${color}">${s.assignee}</span>
+    <span class="sub-date">${s.date||''}${s.time?' '+s.time:''}</span>
+    <button class="del-btn" onclick="deleteSub('${pid}','${s.id}')">✕</button>
+  </div>`;
+}
+
+function toggleTask(id){
+  document.getElementById('pt-'+id)?.classList.toggle('open');
+}
+
+async function toggleSub(tid,sid){
+  const task=tasksCache.find(t=>t.id===tid);
+  if(!task)return;
+  const sub=task.subtasks.find(s=>s.id===sid);
+  if(!sub)return;
+  sub.done=!sub.done;
+  saveLocal();
+  if(API_URL){
+    try{ await apiPost({action:'updateSubtask',taskId:tid,data:sub}); }
+    catch(e){ setSyncState('err','שגיאה בשמירה'); }
+  }
+  renderTasks(); renderOverview();
+}
+
+async function deleteTask(id){
+  if(!confirm('למחוק משימה זו?'))return;
+  tasksCache=tasksCache.filter(t=>t.id!==id);
+  saveLocal();
+  if(API_URL) try{ await apiPost({action:'deleteTask',id}); }catch(e){}
+  renderTasks(); renderOverview();
+  toast('משימה נמחקה');
+}
+
+async function deleteSub(tid,sid){
+  const t=tasksCache.find(t=>t.id===tid);
+  if(t) t.subtasks=t.subtasks.filter(s=>s.id!==sid);
+  saveLocal();
+  if(API_URL) try{ await apiPost({action:'deleteSubtask',taskId:tid,subId:sid}); }catch(e){}
+  renderTasks();
+}
+
+async function quickAddSub(tid){
+  const title=document.getElementById('ns-'+tid).value.trim();
+  if(!title)return;
+  const assignee=document.getElementById('ns-ass-'+tid).value;
+  const date=document.getElementById('ns-date-'+tid).value;
+  const sub={id:'s'+Date.now(),title,assignee,date,time:'',done:false};
+  const t=tasksCache.find(t=>t.id===tid);
+  if(!t)return;
+  t.subtasks.push(sub);
+  saveLocal();
+  if(API_URL) try{ const r=await apiPost({action:'addSubtask',taskId:tid,data:sub}); if(r?.id) sub.id=r.id; }catch(e){}
+  renderTasks(); renderCalendar();
+  toast('משימת משנה נוספה');
+}
+
+// ══════════════════════════════
+// TASK MODAL
+// ══════════════════════════════
+function openTaskModal(editId=null){
+  document.getElementById('mt-id').value=editId||'';
+  if(editId){
+    const t=tasksCache.find(t=>t.id===editId);
+    if(!t)return;
+    document.getElementById('mt-title').textContent='ערוך משימה';
+    document.getElementById('mt-name').value=t.title;
+    document.getElementById('mt-ass').value=t.assignee;
+    document.getElementById('mt-status').value=t.status;
+    document.getElementById('mt-date').value=t.date;
+    document.getElementById('mt-time').value=t.time||'';
+    document.getElementById('mt-notes').value=t.notes||'';
+  } else {
+    document.getElementById('mt-title').textContent='משימה חדשה';
+    document.getElementById('mt-name').value='';
+    document.getElementById('mt-status').value='לביצוע';
+    document.getElementById('mt-date').value='';
+    document.getElementById('mt-time').value='';
+    document.getElementById('mt-notes').value='';
+    document.getElementById('mt-ass').value=currentUser;
+  }
+  document.getElementById('m-task').classList.add('open');
+}
+
+function editTask(id){ openTaskModal(id); }
+
+async function saveTask(){
+  const title=document.getElementById('mt-name').value.trim();
+  if(!title)return alert('נא להזין שם');
+  const editId=document.getElementById('mt-id').value;
+  const data={
+    title, assignee:document.getElementById('mt-ass').value,
+    status:document.getElementById('mt-status').value,
+    date:document.getElementById('mt-date').value,
+    time:document.getElementById('mt-time').value,
+    notes:document.getElementById('mt-notes').value
+  };
+  if(editId){
+    const t=tasksCache.find(t=>t.id===editId);
+    if(t) Object.assign(t,data);
+    if(API_URL) try{ await apiPost({action:'updateTask',data:{...data,id:editId}}); }catch(e){}
+  } else {
+    const newTask={id:'t'+Date.now(),...data,subtasks:[]};
+    tasksCache.push(newTask);
+    if(API_URL) try{ const r=await apiPost({action:'addTask',data}); if(r?.id) newTask.id=r.id; }catch(e){}
+  }
+  saveLocal();
+  closeModal('m-task');
+  renderTasks(); renderOverview(); renderCalendar();
+  toast('משימה נשמרה ✓');
+}
+
+// ══════════════════════════════
+// EVENT MODAL
+// ══════════════════════════════
+function openEventModal(){ document.getElementById('m-event').classList.add('open'); }
+function selType(chip){ document.querySelectorAll('.type-chip').forEach(c=>c.classList.remove('sel')); chip.classList.add('sel'); }
+
+async function saveEvent(){
+  const title=document.getElementById('me-title').value.trim();
+  const date=document.getElementById('me-date').value;
+  if(!title||!date)return alert('נא למלא שם ותאריך');
+  const type=document.querySelector('.type-chip.sel')?.dataset.type||'event';
+  const ev={id:'e'+Date.now(),title,date,type,notes:document.getElementById('me-notes').value,time:document.getElementById('me-time').value};
+  eventsCache.push(ev);
+  saveLocal();
+  if(API_URL) try{ const r=await apiPost({action:'addEvent',data:ev}); if(r?.id) ev.id=r.id; }catch(e){}
+  closeModal('m-event');
+  document.getElementById('me-title').value='';
+  document.getElementById('me-date').value='';
+  document.getElementById('me-notes').value='';
+  renderCalendar(); renderOverview();
+  toast('אירוע נוסף ✓');
+}
+
+async function deleteEvent(id){
+  eventsCache=eventsCache.filter(e=>e.id!==id);
+  saveLocal();
+  if(API_URL) try{ await apiPost({action:'deleteEvent',id}); }catch(e){}
+  renderCalendar(); renderOverview();
+  toast('אירוע נמחק');
+}
+
+// ══════════════════════════════
+// TEAM
+// ══════════════════════════════
+function renderTeam(){
+  const grid=document.getElementById('team-grid');
+  grid.innerHTML='';
+  ['עמי','חני','אודי','גיא','אלעד'].forEach(name=>{
+    const color=COLORS[name];
+    const myT=tasksCache.filter(t=>t.assignee===name);
+    const allSubs=tasksCache.flatMap(t=>(t.subtasks||[]).filter(s=>s.assignee===name));
+    const done=allSubs.filter(s=>s.done).length;
+    const pct=allSubs.length>0?Math.round(done/allSubs.length*100):0;
+    const active=myT.filter(t=>t.status!=='הושלם');
+    const card=document.createElement('div');
+    card.className='m-card';
+    card.innerHTML=`
+      <div class="m-head">
+        <div class="m-avatar" style="background:${color}">${name[0]}</div>
+        <div><div class="m-name">${name}</div><div class="m-role">${myT.length} משימות אב</div></div>
+      </div>
+      <div style="margin-bottom:12px;">
+        <div class="prog-lbl"><span>התקדמות</span><span>${pct}%</span></div>
+        <div class="prog-bg"><div class="prog-fill" style="width:${pct}%;background:${color}"></div></div>
+      </div>
+      <div style="font-size:11px;color:var(--text-muted);margin-bottom:8px;">${allSubs.length} תת-משימות · ${done} הושלמו</div>
+      <div>
+        ${active.slice(0,3).map(t=>`
+          <div class="m-task-item">
+            <div style="width:6px;height:6px;border-radius:50%;background:${color};flex-shrink:0;"></div>
+            <span style="flex:1;">${t.title}</span>
+            <span style="font-size:10px;color:var(--text-muted);">${t.date}</span>
+          </div>`).join('')}
+        ${!active.length?'<div style="color:var(--text-muted);font-size:12px;">אין משימות פעילות</div>':''}
+      </div>`;
+    grid.appendChild(card);
+  });
+}
+
+// ══════════════════════════════
+// UTILS
+// ══════════════════════════════
+function closeModal(id){ document.getElementById(id).classList.remove('open'); }
+function toast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2500); }
+
+document.addEventListener('click',e=>{
+  if(e.target===document.getElementById('m-task')) closeModal('m-task');
+  if(e.target===document.getElementById('m-event')) closeModal('m-event');
+});
+
+// ══════════════════════════════
+// DEFAULT DATA
+// ══════════════════════════════
+function getDefaultEvents(){return[
+  {id:'e1',title:'זיכרון בסלון',date:'2026-04-13',type:'event',notes:'',time:''},
+  {id:'e2',title:'יום השואה',date:'2026-04-14',type:'event',notes:'',time:''},
+  {id:'e3',title:'מפגש ביאנלה',date:'2026-04-16',type:'event',notes:'',time:''},
+  {id:'e4',title:'שבת כפר',date:'2026-04-17',type:'shabbat',notes:'',time:''},
+  {id:'e5',title:'טקס יום הזיכרון',date:'2026-04-20',type:'event',notes:'',time:''},
+  {id:'e6',title:'יום הזיכרון',date:'2026-04-21',type:'event',notes:'',time:''},
+  {id:'e7',title:'יום העצמאות',date:'2026-04-22',type:'event',notes:'',time:''},
+  {id:'e8',title:'שיחת רכז',date:'2026-04-27',type:'deadline',notes:'',time:''},
+  {id:'e9',title:'פעילות פרידה',date:'2026-04-29',type:'event',notes:'',time:''},
+  {id:'e10',title:'שליחת חומרים לספר מחזור',date:'2026-05-01',type:'deadline',notes:'',time:''},
+  {id:'e11',title:'ל״ג בעומר',date:'2026-05-05',type:'event',notes:'',time:''},
+  {id:'e12',title:'הרצאת גיורא לוי',date:'2026-05-06',type:'event',notes:'',time:''},
+  {id:'e13',title:'יום ירושלים',date:'2026-05-15',type:'event',notes:'',time:''},
+  {id:'e14',title:'שבועות',date:'2026-05-21',type:'shabbat',notes:'',time:''},
+  {id:'e15',title:'שיחת רכז',date:'2026-05-25',type:'deadline',notes:'',time:''},
+  {id:'e16',title:'טקס ביאנלה',date:'2026-05-27',type:'event',notes:'יום א׳',time:'19:00'},
+  {id:'e17',title:'טקס ביאנלה',date:'2026-05-28',type:'event',notes:'יום ב׳',time:'19:00'},
+  {id:'e18',title:'שבת פרידה',date:'2026-05-29',type:'shabbat',notes:'',time:''},
+  {id:'e19',title:'שבת אחרונה',date:'2026-06-05',type:'shabbat',notes:'',time:''},
+  {id:'e20',title:'טקס סיום',date:'2026-06-17',type:'event',notes:'🎓',time:'18:00'},
+];}
+
+function getDefaultTasks(){return[
+  {id:'t1',title:'שבת פרידה – הכנות',assignee:'חני',status:'לביצוע',date:'2026-05-25',time:'10:00',notes:'',subtasks:[
+    {id:'s1',title:'הזמנת אוכל לשבת',assignee:'חני',date:'2026-05-22',time:'',done:false},
+    {id:'s2',title:'בניית תכנית שבת',assignee:'עמי',date:'2026-05-20',time:'',done:false},
+    {id:'s3',title:'הפקת חוברת תכנית',assignee:'אלעד',date:'2026-05-23',time:'',done:false},
+  ]},
+  {id:'t2',title:'ספר מחזור',assignee:'אלעד',status:'בתהליך',date:'2026-05-01',time:'',notes:'',subtasks:[
+    {id:'s4',title:'איסוף תמונות מהחניכים',assignee:'גיא',date:'2026-04-25',time:'',done:false},
+    {id:'s5',title:'כתיבת טקסטים',assignee:'אלעד',date:'2026-04-28',time:'',done:false},
+    {id:'s6',title:'עיצוב וגרפיקה',assignee:'אלעד',date:'2026-04-30',time:'',done:false},
+    {id:'s7',title:'שליחה לדפוס',assignee:'אלעד',date:'2026-05-01',time:'12:00',done:false},
+  ]},
+  {id:'t3',title:'טקס ביאנלה',assignee:'עמי',status:'לביצוע',date:'2026-05-27',time:'19:00',notes:'',subtasks:[
+    {id:'s8',title:'בניית תסריט טקס',assignee:'עמי',date:'2026-05-15',time:'',done:false},
+    {id:'s9',title:'סידור הגברה ותאורה',assignee:'אודי',date:'2026-05-25',time:'',done:false},
+    {id:'s10',title:'הדרכת מנחים',assignee:'חני',date:'2026-05-20',time:'',done:false},
+    {id:'s11',title:'הכנת תעודות',assignee:'גיא',date:'2026-05-22',time:'',done:false},
+  ]},
+  {id:'t4',title:'טקס סיום',assignee:'אודי',status:'לביצוע',date:'2026-06-17',time:'18:00',notes:'',subtasks:[
+    {id:'s12',title:'הזמנות להורים',assignee:'אודי',date:'2026-06-01',time:'',done:false},
+    {id:'s13',title:'בניית תכנית טקס',assignee:'עמי',date:'2026-06-07',time:'',done:false},
+    {id:'s14',title:'כיבוד וקייטרינג',assignee:'חני',date:'2026-06-10',time:'',done:false},
+    {id:'s15',title:'סרטון סיום',assignee:'אלעד',date:'2026-06-12',time:'',done:false},
+    {id:'s16',title:'חזרה כללית',assignee:'אודי',date:'2026-06-14',time:'',done:false},
+  ]},
+  {id:'t5',title:'סדנאות פרידה',assignee:'אלעד',status:'לביצוע',date:'2026-06-10',time:'17:00',notes:'',subtasks:[
+    {id:'s17',title:'בניית מסגרת סדנה',assignee:'אלעד',date:'2026-06-01',time:'',done:false},
+    {id:'s18',title:'גיוס מנחים',assignee:'גיא',date:'2026-05-25',time:'',done:false},
+    {id:'s19',title:'חלוקת קבוצות',assignee:'חני',date:'2026-06-05',time:'',done:false},
+  ]},
+  {id:'t6',title:'פעילות פרידה',assignee:'גיא',status:'לביצוע',date:'2026-04-29',time:'17:00',notes:'',subtasks:[
+    {id:'s20',title:'בניית תכנית הפעילות',assignee:'גיא',date:'2026-04-24',time:'',done:false},
+    {id:'s21',title:'רכישת חומרים',assignee:'גיא',date:'2026-04-27',time:'',done:false},
+  ]},
+];}
+
+// INIT
+loadFromLocal();
+</script>
+
+
+</body></html>
