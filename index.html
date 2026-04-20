@@ -1,10 +1,14 @@
 <!DOCTYPE html>
-<!-- saved from url=(0058)file:///C:/Users/user/Downloads/dashboard_connected_4.html -->
-<html lang="he" dir="rtl"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#1a2744">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="אלמוג י״ב">
 <title>י״ב אלמוג – ניהול סיום שנה</title>
-<link href="./י״ב אלמוג – ניהול סיום שנה_files/css2" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800;900&family=Frank+Ruhl+Libre:wght@400;700;900&display=swap" rel="stylesheet">
 <style>
 :root {
   --bg:#f7f4ef; --surface:#fff; --surface2:#f0ebe2; --border:#e2d9cc;
@@ -154,6 +158,89 @@ body{font-family:'Heebo',sans-serif;background:var(--bg);color:var(--text);min-h
 /* TOAST */
 .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--navy);color:#fff;padding:10px 22px;border-radius:9px;font-size:13px;z-index:999;opacity:0;transition:opacity .3s;pointer-events:none;}
 .toast.show{opacity:1;}
+
+/* ── MOBILE ── */
+@media (max-width: 640px) {
+  /* Bottom nav */
+  .bottom-nav{display:flex;}
+  /* Hide top nav on mobile */
+  .nav{display:none;}
+  .user-sel .user-lbl{display:none;}
+  .logo .badge{display:none;}
+  .topbar{padding:0 14px;height:52px;}
+  .logo{font-size:16px;}
+  /* Sync bar */
+  .sync-bar{padding:6px 14px;flex-wrap:wrap;gap:6px;}
+  .api-input{width:100%;font-size:11px;}
+  .api-setup{flex-wrap:wrap;width:100%;}
+  /* Views */
+  .view{padding:16px 14px 90px;}
+  .sec-title{font-size:17px;}
+  /* Stats */
+  .stats-row{grid-template-columns:repeat(3,1fr);gap:8px;}
+  .stat-card{padding:12px 10px;}
+  .stat-val{font-size:22px;}
+  .stat-lbl{font-size:10px;}
+  /* Tasks */
+  .board-ctrls{gap:7px;}
+  .board-ctrls select{font-size:12px;padding:6px 8px;}
+  .board-ctrls input{font-size:12px;}
+  .new-task-btn{font-size:12px;padding:7px 12px;}
+  .pt-header{padding:11px 13px;gap:8px;flex-wrap:wrap;}
+  .pt-title{font-size:13px;width:100%;order:-1;padding-right:20px;}
+  .meta-row{gap:5px;}
+  .ass-badge,.status-badge{font-size:10px;padding:2px 7px;}
+  .date-badge{font-size:10px;}
+  .subs-container{padding:0 13px 11px;}
+  .sub-row{gap:7px;padding:7px 0;}
+  .add-sub-row{flex-direction:column;align-items:stretch;}
+  .add-sub-input{width:100%;}
+  /* Team */
+  .member-grid{grid-template-columns:1fr;}
+  /* Calendar */
+  .weeks{padding:10px 8px;}
+  /* Modals */
+  .modal{padding:20px 16px;margin:10px;border-radius:14px;}
+  .modal h2{font-size:17px;}
+  .frow{grid-template-columns:1fr;}
+  /* Upcoming events */
+  #upcoming > div{padding:10px 12px;gap:10px;}
+  #urgent-tasks > div{padding:9px 12px;}
+}
+
+/* Bottom navigation bar – hidden on desktop */
+.bottom-nav{
+  display:none;
+  position:fixed;
+  bottom:0;left:0;right:0;
+  background:var(--navy);
+  border-top:1px solid rgba(255,255,255,0.1);
+  z-index:100;
+  padding:0 0 env(safe-area-inset-bottom,0);
+}
+.bottom-nav-inner{
+  display:flex;
+  justify-content:space-around;
+  align-items:center;
+  height:58px;
+}
+.bn-btn{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:3px;flex:1;height:100%;
+  background:none;border:none;
+  color:rgba(255,255,255,0.45);
+  font-family:'Heebo',sans-serif;font-size:10px;font-weight:500;
+  cursor:pointer;transition:color .18s;
+  -webkit-tap-highlight-color:transparent;
+}
+.bn-btn .bn-icon{font-size:20px;line-height:1;}
+.bn-btn.active{color:var(--gold-light);}
+.bn-btn.active .bn-icon{transform:scale(1.1);}
+
+/* PWA manifest hint */
+@media (display-mode: standalone){
+  .bottom-nav{padding-bottom:env(safe-area-inset-bottom,16px);}
+}
 </style>
 </head>
 <body>
@@ -164,10 +251,10 @@ body{font-family:'Heebo',sans-serif;background:var(--bg);color:var(--text);min-h
     <span class="badge">סיום שנה</span>
   </div>
   <div class="nav">
-    <button class="nav-btn active" onclick="showView(&#39;overview&#39;,this)">🏠 סקירה</button>
-    <button class="nav-btn" onclick="showView(&#39;calendar&#39;,this)">📅 לו״ז</button>
-    <button class="nav-btn" onclick="showView(&#39;tasks&#39;,this)">✅ משימות</button>
-    <button class="nav-btn" onclick="showView(&#39;team&#39;,this)">👥 צוות</button>
+    <button class="nav-btn active" onclick="showView('overview',this)">🏠 סקירה</button>
+    <button class="nav-btn" onclick="showView('calendar',this)">📅 לו״ז</button>
+    <button class="nav-btn" onclick="showView('tasks',this)">✅ משימות</button>
+    <button class="nav-btn" onclick="showView('team',this)">👥 צוות</button>
   </div>
   <div class="user-sel">
     <span class="user-lbl">מחובר:</span>
@@ -191,88 +278,16 @@ body{font-family:'Heebo',sans-serif;background:var(--bg);color:var(--text);min-h
 <!-- ═══ OVERVIEW ═══ -->
 <div class="view active" id="view-overview">
   <div class="stats-row">
-    <div class="stat-card"><div class="stat-val gold" id="st-events">20</div><div class="stat-lbl">אירועים</div></div>
-    <div class="stat-card"><div class="stat-val" id="st-tasks">5</div><div class="stat-lbl">משימות פעילות</div></div>
-    <div class="stat-card"><div class="stat-val teal" id="st-done">0</div><div class="stat-lbl">הושלמו</div></div>
-    <div class="stat-card"><div class="stat-val coral" id="st-urgent">0</div><div class="stat-lbl">דחוף השבוע</div></div>
-    <div class="stat-card"><div class="stat-val" id="st-days">60</div><div class="stat-lbl">ימים לטקס סיום</div></div>
+    <div class="stat-card"><div class="stat-val gold" id="st-events">—</div><div class="stat-lbl">אירועים</div></div>
+    <div class="stat-card"><div class="stat-val" id="st-tasks">—</div><div class="stat-lbl">משימות פעילות</div></div>
+    <div class="stat-card"><div class="stat-val teal" id="st-done">—</div><div class="stat-lbl">הושלמו</div></div>
+    <div class="stat-card"><div class="stat-val coral" id="st-urgent">—</div><div class="stat-lbl">דחוף השבוע</div></div>
+    <div class="stat-card"><div class="stat-val" id="st-days">—</div><div class="stat-lbl">ימים לטקס סיום</div></div>
   </div>
   <div class="sec-title">אירועים קרובים <span class="line"></span></div>
-  <div id="upcoming" style="display:flex;flex-direction:column;gap:9px;margin-bottom:26px;">
-      <div style="background:var(--surface);border:1px solid var(--border);border-radius:11px;padding:13px 17px;display:flex;align-items:center;gap:14px;box-shadow:var(--shadow);">
-        <div style="text-align:center;background:var(--navy);color:#fff;border-radius:9px;padding:7px 12px;min-width:52px;">
-          <div style="font-size:16px;font-weight:900;">20</div>
-          <div style="font-size:9px;opacity:.65;">אפר</div>
-        </div>
-        <div style="flex:1;">
-          <div style="font-size:14px;font-weight:700;">טקס יום הזיכרון</div>
-          
-        </div>
-        <div style="font-size:11px;color:var(--coral);">עוד 2 ימים</div>
-        <span class="ev-chip chip-event" style="font-size:10px;padding:3px 9px;">אירוע</span>
-      </div>
-      <div style="background:var(--surface);border:1px solid var(--border);border-radius:11px;padding:13px 17px;display:flex;align-items:center;gap:14px;box-shadow:var(--shadow);">
-        <div style="text-align:center;background:var(--navy);color:#fff;border-radius:9px;padding:7px 12px;min-width:52px;">
-          <div style="font-size:16px;font-weight:900;">21</div>
-          <div style="font-size:9px;opacity:.65;">אפר</div>
-        </div>
-        <div style="flex:1;">
-          <div style="font-size:14px;font-weight:700;">יום הזיכרון</div>
-          
-        </div>
-        <div style="font-size:11px;color:var(--coral);">עוד 3 ימים</div>
-        <span class="ev-chip chip-event" style="font-size:10px;padding:3px 9px;">אירוע</span>
-      </div>
-      <div style="background:var(--surface);border:1px solid var(--border);border-radius:11px;padding:13px 17px;display:flex;align-items:center;gap:14px;box-shadow:var(--shadow);">
-        <div style="text-align:center;background:var(--navy);color:#fff;border-radius:9px;padding:7px 12px;min-width:52px;">
-          <div style="font-size:16px;font-weight:900;">22</div>
-          <div style="font-size:9px;opacity:.65;">אפר</div>
-        </div>
-        <div style="flex:1;">
-          <div style="font-size:14px;font-weight:700;">יום העצמאות</div>
-          
-        </div>
-        <div style="font-size:11px;color:var(--text-muted);">עוד 4 ימים</div>
-        <span class="ev-chip chip-event" style="font-size:10px;padding:3px 9px;">אירוע</span>
-      </div>
-      <div style="background:var(--surface);border:1px solid var(--border);border-radius:11px;padding:13px 17px;display:flex;align-items:center;gap:14px;box-shadow:var(--shadow);">
-        <div style="text-align:center;background:var(--navy);color:#fff;border-radius:9px;padding:7px 12px;min-width:52px;">
-          <div style="font-size:16px;font-weight:900;">27</div>
-          <div style="font-size:9px;opacity:.65;">אפר</div>
-        </div>
-        <div style="flex:1;">
-          <div style="font-size:14px;font-weight:700;">שיחת רכז</div>
-          
-        </div>
-        <div style="font-size:11px;color:var(--text-muted);">עוד 9 ימים</div>
-        <span class="ev-chip chip-deadline" style="font-size:10px;padding:3px 9px;">דד-ליין</span>
-      </div>
-      <div style="background:var(--surface);border:1px solid var(--border);border-radius:11px;padding:13px 17px;display:flex;align-items:center;gap:14px;box-shadow:var(--shadow);">
-        <div style="text-align:center;background:var(--navy);color:#fff;border-radius:9px;padding:7px 12px;min-width:52px;">
-          <div style="font-size:16px;font-weight:900;">29</div>
-          <div style="font-size:9px;opacity:.65;">אפר</div>
-        </div>
-        <div style="flex:1;">
-          <div style="font-size:14px;font-weight:700;">פעילות פרידה</div>
-          
-        </div>
-        <div style="font-size:11px;color:var(--text-muted);">עוד 11 ימים</div>
-        <span class="ev-chip chip-event" style="font-size:10px;padding:3px 9px;">אירוע</span>
-      </div>
-      <div style="background:var(--surface);border:1px solid var(--border);border-radius:11px;padding:13px 17px;display:flex;align-items:center;gap:14px;box-shadow:var(--shadow);">
-        <div style="text-align:center;background:var(--navy);color:#fff;border-radius:9px;padding:7px 12px;min-width:52px;">
-          <div style="font-size:16px;font-weight:900;">1</div>
-          <div style="font-size:9px;opacity:.65;">מאי</div>
-        </div>
-        <div style="flex:1;">
-          <div style="font-size:14px;font-weight:700;">שליחת חומרים לספר מחזור</div>
-          
-        </div>
-        <div style="font-size:11px;color:var(--text-muted);">עוד 13 ימים</div>
-        <span class="ev-chip chip-deadline" style="font-size:10px;padding:3px 9px;">דד-ליין</span>
-      </div></div>
+  <div id="upcoming" style="display:flex;flex-direction:column;gap:9px;margin-bottom:26px;"></div>
   <div class="sec-title">משימות דחופות <span class="line"></span></div>
-  <div id="urgent-tasks" style="display:flex;flex-direction:column;gap:7px;"><div style="color:var(--text-muted);font-size:13px;">אין משימות דחופות השבוע 🎉</div></div>
+  <div id="urgent-tasks" style="display:flex;flex-direction:column;gap:7px;"></div>
 </div>
 
 <!-- ═══ CALENDAR ═══ -->
@@ -329,7 +344,7 @@ body{font-family:'Heebo',sans-serif;background:var(--bg);color:var(--text);min-h
     </div>
     <div class="fg"><label class="fl">הערות</label><textarea class="fta" id="mt-notes" rows="2" placeholder="פרטים נוספים..."></textarea></div>
     <div class="m-actions">
-      <button class="btn-s" onclick="closeModal(&#39;m-task&#39;)">ביטול</button>
+      <button class="btn-s" onclick="closeModal('m-task')">ביטול</button>
       <button class="btn-p" onclick="saveTask()">שמור</button>
     </div>
   </div>
@@ -355,9 +370,27 @@ body{font-family:'Heebo',sans-serif;background:var(--bg);color:var(--text);min-h
     </div>
     <div class="fg"><label class="fl">הערות</label><input class="fi" id="me-notes" placeholder="פרטים נוספים..."></div>
     <div class="m-actions">
-      <button class="btn-s" onclick="closeModal(&#39;m-event&#39;)">ביטול</button>
+      <button class="btn-s" onclick="closeModal('m-event')">ביטול</button>
       <button class="btn-p" onclick="saveEvent()">הוסף</button>
     </div>
+  </div>
+</div>
+
+<!-- BOTTOM NAV (mobile only) -->
+<div class="bottom-nav">
+  <div class="bottom-nav-inner">
+    <button class="bn-btn active" id="bn-overview" onclick="showView('overview',null,this)">
+      <span class="bn-icon">🏠</span><span>סקירה</span>
+    </button>
+    <button class="bn-btn" id="bn-calendar" onclick="showView('calendar',null,this)">
+      <span class="bn-icon">📅</span><span>לו״ז</span>
+    </button>
+    <button class="bn-btn" id="bn-tasks" onclick="showView('tasks',null,this)">
+      <span class="bn-icon">✅</span><span>משימות</span>
+    </button>
+    <button class="bn-btn" id="bn-team" onclick="showView('team',null,this)">
+      <span class="bn-icon">👥</span><span>צוות</span>
+    </button>
   </div>
 </div>
 
@@ -456,11 +489,18 @@ function renderAll() {
 // ══════════════════════════════
 // NAV
 // ══════════════════════════════
-function showView(name, btn) {
+function showView(name, btn, bnBtn) {
   document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.bn-btn').forEach(b=>b.classList.remove('active'));
   document.getElementById('view-'+name).classList.add('active');
   if (btn) btn.classList.add('active');
+  if (bnBtn) bnBtn.classList.add('active');
+  const bnEl = document.getElementById('bn-'+name);
+  if (bnEl) bnEl.classList.add('active');
+  document.querySelectorAll('.nav-btn').forEach(b=>{
+    if(b.getAttribute('onclick')?.includes("'"+name+"'")) b.classList.add('active');
+  });
   if (name==='overview') renderOverview();
   if (name==='calendar') renderCalendar();
   if (name==='tasks')    renderTasks();
@@ -904,6 +944,5 @@ function getDefaultTasks(){return[
 // INIT
 loadFromLocal();
 </script>
-
-
-</body></html>
+</body>
+</html>
