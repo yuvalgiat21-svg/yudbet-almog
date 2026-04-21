@@ -63,19 +63,16 @@ body{font-family:'Heebo',sans-serif;background:var(--bg);color:var(--text);min-h
 
 /* CALENDAR */
 .cal-wrapper{background:var(--surface);border:1px solid var(--border);border-radius:15px;overflow:hidden;box-shadow:var(--shadow);}
-.cal-head{background:var(--navy);padding:13px 20px;display:flex;align-items:center;justify-content:space-between;}
-.cal-head h3{color:#fff;font-size:14px;font-weight:700;}
-.weeks{padding:18px 20px;overflow-x:auto;}
-.day-names-row{display:grid;grid-template-columns:60px repeat(7,1fr);gap:5px;margin-bottom:4px;min-width:640px;}
-.day-name{text-align:center;font-size:10px;font-weight:700;color:var(--text-muted);letter-spacing:1px;padding:2px 0;}
-.week-row{display:grid;grid-template-columns:60px repeat(7,1fr);gap:5px;margin-bottom:8px;min-width:640px;}
-.wk-lbl{font-size:9px;font-weight:700;color:var(--text-muted);text-align:center;padding:5px 0;display:flex;align-items:center;justify-content:center;}
-.day-cell{border-radius:7px;padding:5px 7px;min-height:50px;border:1px solid var(--border);background:var(--bg);font-size:10px;cursor:pointer;transition:border-color .15s;}
-.day-cell:hover{border-color:var(--gold);}
-.day-cell.today{border-color:var(--gold);background:var(--gold-dim);}
-.day-num{font-size:10px;font-weight:700;color:var(--text-muted);margin-bottom:3px;}
-.day-cell.today .day-num{color:var(--gold);}
-.ev-chip{border-radius:3px;padding:2px 5px;font-size:9px;font-weight:600;margin-bottom:2px;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;display:block;}
+.weeks{padding:14px 10px;overflow-x:auto;-webkit-overflow-scrolling:touch;}
+.week-row-mobile{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin-bottom:4px;}
+.day-cell-mobile{border-radius:6px;padding:4px 3px;min-height:58px;border:1px solid var(--border);background:var(--bg);font-size:9px;cursor:pointer;transition:border-color .15s;}
+.day-cell-mobile:hover{border-color:var(--gold);}
+.day-cell-mobile.today{border-color:var(--gold);background:var(--gold-dim);}
+.day-header-mobile{display:flex;flex-direction:column;align-items:center;margin-bottom:3px;gap:1px;}
+.day-name-mobile{font-size:8px;font-weight:600;color:var(--text-muted);line-height:1;}
+.day-date-mobile{font-size:10px;font-weight:900;color:var(--text);line-height:1.1;}
+.day-cell-mobile.today .day-name-mobile,.day-cell-mobile.today .day-date-mobile{color:var(--gold);}
+.ev-chip{border-radius:3px;padding:2px 4px;font-size:8px;font-weight:600;margin-bottom:2px;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;display:block;}
 .chip-event{background:#dbeafe;color:#1e40af;}
 .chip-shabbat{background:#fce7f3;color:#9d174d;}
 .chip-deadline{background:#fee2e2;color:#991b1b;}
@@ -84,7 +81,7 @@ body{font-family:'Heebo',sans-serif;background:var(--bg);color:var(--text);min-h
 .chip-bagrut{background:#fee2e2;color:#7f1d1d;font-weight:700;}
 .chip-social{background:#dcfce7;color:#14532d;}
 .chip-trip{background:#ede9fe;color:#4c1d95;}
-.cal-legend{display:flex;gap:8px;flex-wrap:wrap;padding:10px 20px;border-top:1px solid var(--border);background:var(--bg);}
+.cal-legend{display:flex;gap:8px;flex-wrap:wrap;padding:10px 14px;border-top:1px solid var(--border);background:var(--bg);}
 .legend-item{display:flex;align-items:center;gap:4px;font-size:10px;color:var(--text-mid);font-weight:600;}
 .legend-dot{width:10px;height:10px;border-radius:2px;flex-shrink:0;}
 .month-div{background:var(--navy);color:rgba(255,255,255,0.7);font-size:10px;font-weight:700;padding:5px 13px;border-radius:5px;margin:12px 0 7px;letter-spacing:1.5px;width:fit-content;}
@@ -621,6 +618,8 @@ function renderOverview() {
 // ══════════════════════════════
 // CALENDAR
 // ══════════════════════════════
+const DAY_NAMES_FULL = ['ראשון','שני','שלישי','רביעי','חמישי','שישי','שבת'];
+
 function renderCalendar() {
   const grid = document.getElementById('cal-grid');
   grid.innerHTML = '';
@@ -638,11 +637,6 @@ function renderCalendar() {
   const today = new Date(); today.setHours(0,0,0,0);
   let cur = new Date(start), lastM = -1;
 
-  const hdr = document.createElement('div');
-  hdr.className = 'day-names-row';
-  hdr.innerHTML = '<div></div>'+DAYS.map(d=>`<div class="day-name">${d}</div>`).join('');
-  grid.appendChild(hdr);
-
   while (cur < end) {
     const m = cur.getMonth()+1;
     if (m!==lastM) {
@@ -653,16 +647,15 @@ function renderCalendar() {
       grid.appendChild(md);
     }
     const row=document.createElement('div');
-    row.className='week-row';
-    const wl=document.createElement('div');
-    wl.className='wk-lbl';
-    wl.innerHTML=`<span style="font-size:9px;">${cur.getDate()}/${cur.getMonth()+1}</span>`;
-    row.appendChild(wl);
+    row.className='week-row-mobile';
     for(let d=0;d<7;d++){
       const cell=document.createElement('div');
       const ds=cur.toISOString().split('T')[0];
-      cell.className='day-cell'+(cur.getTime()===today.getTime()?' today':'');
-      cell.innerHTML=`<div class="day-num">${cur.getDate()}</div>`;
+      const dayOfWeek = (cur.getDay()+1)%7; // 0=ראשון
+      const dayName = DAY_NAMES_FULL[dayOfWeek];
+      const dateLabel = `${cur.getDate()}.${cur.getMonth()+1}`;
+      cell.className='day-cell-mobile'+(cur.getTime()===today.getTime()?' today':'');
+      cell.innerHTML=`<div class="day-header-mobile"><span class="day-name-mobile">${dayName}</span><span class="day-date-mobile">${dateLabel}</span></div>`;
       (evMap[ds]||[]).forEach(e=>{
         const chip=document.createElement('span');
         chip.className='ev-chip '+getChipClass(e);
@@ -672,7 +665,6 @@ function renderCalendar() {
       });
       cell.ondblclick=()=>{ document.getElementById('me-date').value=ds; openEventModal(); };
       row.appendChild(cell);
-
       cur.setDate(cur.getDate()+1);
     }
     grid.appendChild(row);
