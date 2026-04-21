@@ -168,29 +168,27 @@ body{font-family:'Heebo',sans-serif;background:var(--bg);color:var(--text);min-h
 
 /* ── MOBILE ── */
 @media (max-width: 768px) {
-  /* Bottom nav */
-  .bottom-nav{display:flex;}
-  /* Hide top nav on mobile */
-  .nav{display:none;}
-  .user-sel .user-lbl{display:none;}
-  .logo .badge{display:none;}
-  .topbar{padding:0 14px;height:52px;}
-  .logo{font-size:16px;}
-  /* Sync bar */
-  .sync-bar{padding:6px 14px;flex-wrap:wrap;gap:6px;}
-  .api-input{width:100%;font-size:11px;}
-  .api-setup{flex-wrap:wrap;width:100%;}
+  .bottom-nav{display:none !important;}
+  /* Topbar – שתי שורות */
+  .topbar{padding:0 12px;height:auto;flex-wrap:wrap;padding-top:10px;padding-bottom:0;}
+  .logo{font-size:16px;width:100%;margin-bottom:6px;}
+  .logo .badge{font-size:10px;}
+  /* ניווט – שורה שנייה מתחת ללוגו */
+  .nav{display:flex;margin-right:0;width:100%;overflow-x:auto;gap:2px;padding-bottom:8px;-webkit-overflow-scrolling:touch;}
+  .nav-btn{font-size:12px;padding:7px 12px;white-space:nowrap;flex-shrink:0;}
+  /* מסתיר את בוחר המשתמש בשורת הלוגו – יש בהגדרות */
+  .user-sel{display:none;}
   /* Views */
-  .view{padding:14px 12px 90px;}
+  .view{padding:14px 12px 30px;}
   .sec-title{font-size:17px;}
-  /* Stats – 3 per row portrait, 5 per row landscape */
+  /* Stats */
   .stats-row{grid-template-columns:repeat(3,1fr);gap:7px;}
-  .stat-card{padding:11px 8px;}
-  .stat-val{font-size:20px;}
+  .stat-card{padding:10px 7px;}
+  .stat-val{font-size:19px;}
   .stat-lbl{font-size:10px;}
   /* Tasks */
   .board-ctrls{gap:6px;}
-  .board-ctrls select{font-size:12px;padding:6px 8px;max-width:120px;}
+  .board-ctrls select{font-size:12px;padding:6px 8px;max-width:110px;}
   .board-ctrls input{font-size:12px;}
   .new-task-btn{font-size:12px;padding:7px 12px;white-space:nowrap;}
   .pt-header{padding:11px 12px;gap:7px;flex-wrap:wrap;}
@@ -207,7 +205,7 @@ body{font-family:'Heebo',sans-serif;background:var(--bg);color:var(--text);min-h
   .mini-btn{width:100%;padding:8px;font-size:13px;}
   /* Team */
   .member-grid{grid-template-columns:1fr;}
-  /* Calendar – horizontal scroll */
+  /* Calendar */
   .weeks{padding:8px 6px;-webkit-overflow-scrolling:touch;}
   .cal-legend{padding:8px 10px;gap:6px;}
   .legend-item{font-size:9px;}
@@ -225,45 +223,9 @@ body{font-family:'Heebo',sans-serif;background:var(--bg);color:var(--text);min-h
 /* Landscape phone */
 @media (max-width: 768px) and (orientation: landscape) {
   .stats-row{grid-template-columns:repeat(5,1fr);}
-  .view{padding:10px 12px 72px;}
-  .topbar{height:46px;}
-  .bottom-nav-inner{height:50px;}
-  .bn-btn{font-size:9px;}
-  .bn-btn .bn-icon{font-size:17px;}
-}
-
-/* Bottom navigation bar – hidden on desktop */
-.bottom-nav{
-  display:none;
-  position:fixed;
-  bottom:0;left:0;right:0;
-  background:var(--navy);
-  border-top:1px solid rgba(255,255,255,0.1);
-  z-index:100;
-  padding:0 0 env(safe-area-inset-bottom,0);
-}
-.bottom-nav-inner{
-  display:flex;
-  justify-content:space-around;
-  align-items:center;
-  height:58px;
-}
-.bn-btn{
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  gap:3px;flex:1;height:100%;
-  background:none;border:none;
-  color:rgba(255,255,255,0.45);
-  font-family:'Heebo',sans-serif;font-size:10px;font-weight:500;
-  cursor:pointer;transition:color .18s;
-  -webkit-tap-highlight-color:transparent;
-}
-.bn-btn .bn-icon{font-size:20px;line-height:1;}
-.bn-btn.active{color:var(--gold-light);}
-.bn-btn.active .bn-icon{transform:scale(1.1);}
-
-/* PWA manifest hint */
-@media (display-mode: standalone){
-  .bottom-nav{padding-bottom:env(safe-area-inset-bottom,16px);}
+  .topbar{flex-wrap:nowrap;height:46px;padding-top:0;padding-bottom:0;}
+  .logo{width:auto;margin-bottom:0;}
+  .nav{width:auto;padding-bottom:0;overflow-x:auto;}
 }
 </style>
 </head>
