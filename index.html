@@ -80,6 +80,13 @@ body{font-family:'Heebo',sans-serif;background:var(--bg);color:var(--text);min-h
 .chip-shabbat{background:#fce7f3;color:#9d174d;}
 .chip-deadline{background:#fee2e2;color:#991b1b;}
 .chip-task{background:var(--teal-dim);color:var(--teal);border:1px solid rgba(42,122,110,0.2);}
+.chip-academic{background:#fef3c7;color:#78350f;}
+.chip-bagrut{background:#fee2e2;color:#7f1d1d;font-weight:700;}
+.chip-social{background:#dcfce7;color:#14532d;}
+.chip-trip{background:#ede9fe;color:#4c1d95;}
+.cal-legend{display:flex;gap:8px;flex-wrap:wrap;padding:10px 20px;border-top:1px solid var(--border);background:var(--bg);}
+.legend-item{display:flex;align-items:center;gap:4px;font-size:10px;color:var(--text-mid);font-weight:600;}
+.legend-dot{width:10px;height:10px;border-radius:2px;flex-shrink:0;}
 .month-div{background:var(--navy);color:rgba(255,255,255,0.7);font-size:10px;font-weight:700;padding:5px 13px;border-radius:5px;margin:12px 0 7px;letter-spacing:1.5px;width:fit-content;}
 
 /* TASKS */
@@ -160,7 +167,7 @@ body{font-family:'Heebo',sans-serif;background:var(--bg);color:var(--text);min-h
 .toast.show{opacity:1;}
 
 /* ── MOBILE ── */
-@media (max-width: 640px) {
+@media (max-width: 768px) {
   /* Bottom nav */
   .bottom-nav{display:flex;}
   /* Hide top nav on mobile */
@@ -174,38 +181,55 @@ body{font-family:'Heebo',sans-serif;background:var(--bg);color:var(--text);min-h
   .api-input{width:100%;font-size:11px;}
   .api-setup{flex-wrap:wrap;width:100%;}
   /* Views */
-  .view{padding:16px 14px 90px;}
+  .view{padding:14px 12px 90px;}
   .sec-title{font-size:17px;}
-  /* Stats */
-  .stats-row{grid-template-columns:repeat(3,1fr);gap:8px;}
-  .stat-card{padding:12px 10px;}
-  .stat-val{font-size:22px;}
+  /* Stats – 3 per row portrait, 5 per row landscape */
+  .stats-row{grid-template-columns:repeat(3,1fr);gap:7px;}
+  .stat-card{padding:11px 8px;}
+  .stat-val{font-size:20px;}
   .stat-lbl{font-size:10px;}
   /* Tasks */
-  .board-ctrls{gap:7px;}
-  .board-ctrls select{font-size:12px;padding:6px 8px;}
+  .board-ctrls{gap:6px;}
+  .board-ctrls select{font-size:12px;padding:6px 8px;max-width:120px;}
   .board-ctrls input{font-size:12px;}
-  .new-task-btn{font-size:12px;padding:7px 12px;}
-  .pt-header{padding:11px 13px;gap:8px;flex-wrap:wrap;}
-  .pt-title{font-size:13px;width:100%;order:-1;padding-right:20px;}
-  .meta-row{gap:5px;}
+  .new-task-btn{font-size:12px;padding:7px 12px;white-space:nowrap;}
+  .pt-header{padding:11px 12px;gap:7px;flex-wrap:wrap;}
+  .pt-title{font-size:13px;width:100%;order:-1;}
+  .meta-row{gap:5px;flex-wrap:wrap;}
   .ass-badge,.status-badge{font-size:10px;padding:2px 7px;}
   .date-badge{font-size:10px;}
-  .subs-container{padding:0 13px 11px;}
-  .sub-row{gap:7px;padding:7px 0;}
-  .add-sub-row{flex-direction:column;align-items:stretch;}
+  .subs-container{padding:0 12px 10px;}
+  .sub-row{gap:7px;padding:8px 0;flex-wrap:wrap;}
+  .sub-text{min-width:60%;}
+  .add-sub-row{flex-direction:column;align-items:stretch;gap:6px;}
   .add-sub-input{width:100%;}
+  .mini-sel{width:100%;padding:7px 8px;}
+  .mini-btn{width:100%;padding:8px;font-size:13px;}
   /* Team */
   .member-grid{grid-template-columns:1fr;}
-  /* Calendar */
-  .weeks{padding:10px 8px;}
+  /* Calendar – horizontal scroll */
+  .weeks{padding:8px 6px;-webkit-overflow-scrolling:touch;}
+  .cal-legend{padding:8px 10px;gap:6px;}
+  .legend-item{font-size:9px;}
   /* Modals */
-  .modal{padding:20px 16px;margin:10px;border-radius:14px;}
-  .modal h2{font-size:17px;}
+  .modal{padding:18px 14px;margin:8px;border-radius:14px;max-height:90vh;overflow-y:auto;}
+  .modal h2{font-size:16px;margin-bottom:14px;}
   .frow{grid-template-columns:1fr;}
-  /* Upcoming events */
+  .type-chip{padding:6px 10px;font-size:11px;}
+  /* Upcoming */
   #upcoming > div{padding:10px 12px;gap:10px;}
+  #upcoming > div > div:first-child{min-width:44px;padding:6px 8px;}
   #urgent-tasks > div{padding:9px 12px;}
+}
+
+/* Landscape phone */
+@media (max-width: 768px) and (orientation: landscape) {
+  .stats-row{grid-template-columns:repeat(5,1fr);}
+  .view{padding:10px 12px 72px;}
+  .topbar{height:46px;}
+  .bottom-nav-inner{height:50px;}
+  .bn-btn{font-size:9px;}
+  .bn-btn .bn-icon{font-size:17px;}
 }
 
 /* Bottom navigation bar – hidden on desktop */
@@ -293,11 +317,20 @@ body{font-family:'Heebo',sans-serif;background:var(--bg);color:var(--text);min-h
 <!-- ═══ CALENDAR ═══ -->
 <div class="view" id="view-calendar">
   <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;flex-wrap:wrap;gap:10px;">
-    <div class="sec-title" style="margin-bottom:0;">לוח אירועים – אפריל–יוני 2026 <span class="line"></span></div>
+    <div class="sec-title" style="margin-bottom:0;">לוח אירועים – אפריל–יולי 2026 <span class="line"></span></div>
     <button class="new-task-btn" onclick="openEventModal()">+ הוסף אירוע</button>
   </div>
   <div class="cal-wrapper">
     <div class="weeks" id="cal-grid"></div>
+    <div class="cal-legend">
+      <div class="legend-item"><div class="legend-dot" style="background:#86efac;"></div>חברתי 🎉</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#fde68a;"></div>לימודי 📚</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#fca5a5;"></div>בגרות 📝</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#c4b5fd;"></div>טיול/הפלגה ⛵</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#fbcfe8;"></div>שבת 🕯️</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#fca5a5;border:2px solid #991b1b;"></div>דד-ליין 🔴</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#99f6e4;border:1px solid #0d9488;"></div>משימה 📌</div>
+    </div>
   </div>
 </div>
 
@@ -362,10 +395,12 @@ body{font-family:'Heebo',sans-serif;background:var(--bg);color:var(--text);min-h
     <div class="fg">
       <label class="fl">סוג</label>
       <div class="type-row">
-        <div class="type-chip sel" data-type="event" onclick="selType(this)">אירוע</div>
-        <div class="type-chip" data-type="shabbat" onclick="selType(this)">שבת</div>
-        <div class="type-chip" data-type="deadline" onclick="selType(this)">דד-ליין</div>
-        <div class="type-chip" data-type="task" onclick="selType(this)">משימה</div>
+        <div class="type-chip sel" data-type="social" onclick="selType(this)">🎉 חברתי</div>
+        <div class="type-chip" data-type="academic" onclick="selType(this)">📚 לימודי</div>
+        <div class="type-chip" data-type="bagrut" onclick="selType(this)">📝 בגרות</div>
+        <div class="type-chip" data-type="trip" onclick="selType(this)">⛵ טיול</div>
+        <div class="type-chip" data-type="shabbat" onclick="selType(this)">🕯️ שבת</div>
+        <div class="type-chip" data-type="deadline" onclick="selType(this)">🔴 דד-ליין</div>
       </div>
     </div>
     <div class="fg"><label class="fl">הערות</label><input class="fi" id="me-notes" placeholder="פרטים נוספים..."></div>
@@ -401,7 +436,24 @@ body{font-family:'Heebo',sans-serif;background:var(--bg);color:var(--text);min-h
 // CONFIG & STATE
 // ══════════════════════════════
 const COLORS = {עמי:'#1a2744',חני:'#2a7a6e',אודי:'#c8922a',גיא:'#7c3aed',אלעד:'#c0452a'};
-const MONTHS = {4:'אפריל',5:'מאי',6:'יוני'};
+const MONTHS = {4:'אפריל',5:'מאי',6:'יוני',7:'יולי'};
+
+function getChipClass(e) {
+  if(e.type==='shabbat') return 'chip-shabbat';
+  if(e.type==='deadline') return 'chip-deadline';
+  if(e.type==='task') return 'chip-task';
+  if(e.type==='bagrut') return 'chip-bagrut';
+  if(e.type==='academic') return 'chip-academic';
+  if(e.type==='trip') return 'chip-trip';
+  if(e.type==='social') return 'chip-social';
+  return 'chip-event';
+}
+
+function getChipLabel(e) {
+  const icons = {shabbat:'🕯️',bagrut:'📝',academic:'📚',trip:'⛵',social:'🎉',deadline:'🔴',task:'📌'};
+  const icon = icons[e.type] || '';
+  return icon ? icon+' '+e.title : e.title;
+}
 const DAYS   = ['א׳','ב׳','ג׳','ד׳','ה׳','ו׳','ש׳'];
 
 let currentUser = 'עמי';
@@ -580,7 +632,7 @@ function renderCalendar() {
   });
 
   const start = new Date('2026-04-12');
-  const end   = new Date('2026-06-22');
+  const end   = new Date('2026-08-01');
   const today = new Date(); today.setHours(0,0,0,0);
   let cur = new Date(start), lastM = -1;
 
@@ -611,13 +663,14 @@ function renderCalendar() {
       cell.innerHTML=`<div class="day-num">${cur.getDate()}</div>`;
       (evMap[ds]||[]).forEach(e=>{
         const chip=document.createElement('span');
-        chip.className='ev-chip '+(e.type==='shabbat'?'chip-shabbat':e.type==='deadline'?'chip-deadline':e.type==='task'?'chip-task':'chip-event');
-        chip.textContent=e.title;
+        chip.className='ev-chip '+getChipClass(e);
+        chip.textContent=getChipLabel(e);
         if(e.id?.startsWith('e')) chip.onclick=ev=>{ev.stopPropagation();if(confirm('למחוק אירוע זה?'))deleteEvent(e.id);};
         cell.appendChild(chip);
       });
       cell.ondblclick=()=>{ document.getElementById('me-date').value=ds; openEventModal(); };
       row.appendChild(cell);
+
       cur.setDate(cur.getDate()+1);
     }
     grid.appendChild(row);
@@ -883,27 +936,107 @@ document.addEventListener('click',e=>{
 // DEFAULT DATA
 // ══════════════════════════════
 function getDefaultEvents(){return[
-  {id:'e1',title:'זיכרון בסלון',date:'2026-04-13',type:'event',notes:'',time:''},
+  {id:'e1',title:'זיכרון בסלון',date:'2026-04-13',type:'social',notes:'',time:''},
   {id:'e2',title:'יום השואה',date:'2026-04-14',type:'event',notes:'',time:''},
-  {id:'e3',title:'מפגש ביאנלה',date:'2026-04-16',type:'event',notes:'',time:''},
+  {id:'e3',title:'מפגש ביאנלה',date:'2026-04-16',type:'social',notes:'',time:''},
   {id:'e4',title:'שבת כפר',date:'2026-04-17',type:'shabbat',notes:'',time:''},
   {id:'e5',title:'טקס יום הזיכרון',date:'2026-04-20',type:'event',notes:'',time:''},
   {id:'e6',title:'יום הזיכרון',date:'2026-04-21',type:'event',notes:'',time:''},
-  {id:'e7',title:'יום העצמאות',date:'2026-04-22',type:'event',notes:'',time:''},
+  {id:'e7',title:'יום העצמאות',date:'2026-04-22',type:'social',notes:'',time:''},
+  {id:'e_trip1a',title:'הפלגת חופים',date:'2026-04-23',type:'trip',notes:'',time:''},
+  {id:'e_trip1b',title:'הפלגת חופים',date:'2026-04-24',type:'trip',notes:'',time:''},
+  {id:'e_trip1c',title:'הפלגת חופים',date:'2026-04-25',type:'trip',notes:'',time:''},
+  {id:'e_photo',title:'צילומים בבית ספר',date:'2026-04-27',type:'academic',notes:'',time:''},
   {id:'e8',title:'שיחת רכז',date:'2026-04-27',type:'deadline',notes:'',time:''},
-  {id:'e9',title:'פעילות פרידה',date:'2026-04-29',type:'event',notes:'',time:''},
+  {id:'e_show',title:'הצגה בעוטף',date:'2026-04-28',type:'social',notes:'',time:''},
+  {id:'e9',title:'פעילות פרידה',date:'2026-04-29',type:'social',notes:'',time:''},
+  {id:'e_trip2a',title:'הפלגת חופים',date:'2026-04-30',type:'trip',notes:'',time:''},
+  {id:'e_trip2b',title:'הפלגת חופים',date:'2026-05-01',type:'trip',notes:'',time:''},
   {id:'e10',title:'שליחת חומרים לספר מחזור',date:'2026-05-01',type:'deadline',notes:'',time:''},
-  {id:'e11',title:'ל״ג בעומר',date:'2026-05-05',type:'event',notes:'',time:''},
-  {id:'e12',title:'הרצאת גיורא לוי',date:'2026-05-06',type:'event',notes:'',time:''},
+  {id:'e_trip2c',title:'הפלגת חופים',date:'2026-05-02',type:'trip',notes:'',time:''},
+  {id:'e_math1',title:'מתכונת מתמטיקה',date:'2026-05-04',type:'academic',notes:'',time:''},
+  {id:'e11',title:'ל״ג בעומר',date:'2026-05-05',type:'social',notes:'',time:''},
+  {id:'e_amitaz',title:'אזכרה עמית + תערוכת אומנות',date:'2026-05-06',type:'social',notes:'',time:''},
+  {id:'e12',title:'הרצאת גיורא לוי',date:'2026-05-06',type:'academic',notes:'',time:''},
+  {id:'e_masabogr',title:'מסע בוגר עמק חפר',date:'2026-05-07',type:'trip',notes:'',time:''},
+  {id:'e_bag_lashon1',title:'📝 בגרות לשון (עומר וטל)',date:'2026-05-07',type:'bagrut',notes:'',time:''},
+  {id:'e_bag_math1',title:'📝 בגרות מתמטיקה',date:'2026-05-12',type:'bagrut',notes:'',time:''},
+  {id:'e_bag_math2',title:'📝 בגרות מתמטיקה',date:'2026-05-13',type:'bagrut',notes:'',time:''},
   {id:'e13',title:'יום ירושלים',date:'2026-05-15',type:'event',notes:'',time:''},
+  {id:'e_shab_yam',title:'שבת ימאות',date:'2026-05-15',type:'shabbat',notes:'',time:''},
+  {id:'e_shab_yam2',title:'שבת ימאות',date:'2026-05-16',type:'shabbat',notes:'',time:''},
+  {id:'e_eilat1',title:'חקי באילת',date:'2026-05-17',type:'trip',notes:'',time:''},
+  {id:'e_tests1',title:'הכנה לטסטים',date:'2026-05-17',type:'academic',notes:'',time:''},
+  {id:'e_psych1',title:'בימת שיתוף פסיכולוגיה',date:'2026-05-17',type:'academic',notes:'',time:''},
+  {id:'e_eilat2',title:'חקי באילת',date:'2026-05-18',type:'trip',notes:'',time:''},
+  {id:'e_tests2',title:'הכנה לטסטים',date:'2026-05-18',type:'academic',notes:'',time:''},
+  {id:'e_bag_eng_b',title:'📝 בגרות אנגלית מועד ב',date:'2026-05-18',type:'bagrut',notes:'',time:''},
+  {id:'e_eilat3',title:'חקי באילת',date:'2026-05-19',type:'trip',notes:'',time:''},
+  {id:'e_tests3',title:'הכנה לטסטים',date:'2026-05-19',type:'academic',notes:'',time:''},
+  {id:'e_tests4',title:'הכנה לטסטים',date:'2026-05-20',type:'academic',notes:'',time:''},
+  {id:'e_rondo',title:'אופציה לרונדו',date:'2026-05-20',type:'social',notes:'',time:''},
   {id:'e14',title:'שבועות',date:'2026-05-21',type:'shabbat',notes:'',time:''},
+  {id:'e_shvuot2',title:'שבועות',date:'2026-05-22',type:'shabbat',notes:'',time:''},
+  {id:'e_tests5',title:'הכנה לטסטים',date:'2026-05-24',type:'academic',notes:'',time:''},
+  {id:'e_psych2',title:'בימת שיתוף פסיכולוגיה',date:'2026-05-24',type:'academic',notes:'',time:''},
   {id:'e15',title:'שיחת רכז',date:'2026-05-25',type:'deadline',notes:'',time:''},
-  {id:'e16',title:'טקס ביאנלה',date:'2026-05-27',type:'event',notes:'יום א׳',time:'19:00'},
-  {id:'e17',title:'טקס ביאנלה',date:'2026-05-28',type:'event',notes:'יום ב׳',time:'19:00'},
+  {id:'e_tests6',title:'הכנה לטסטים',date:'2026-05-25',type:'academic',notes:'',time:''},
+  {id:'e_haki_bio1',title:'מתכונת חקי ביולוגיה 1',date:'2026-05-25',type:'academic',notes:'',time:''},
+  {id:'e_geo1',title:'מתכונת גאוגרפיה',date:'2026-05-25',type:'academic',notes:'',time:''},
+  {id:'e_tests7',title:'הכנה לטסטים',date:'2026-05-26',type:'academic',notes:'',time:''},
+  {id:'e_bagr_soc',title:'📝 טקס חלוקת בגרות חברתית',date:'2026-05-26',type:'bagrut',notes:'19:00',time:'19:00'},
+  {id:'e_tests8',title:'הכנה לטסטים',date:'2026-05-27',type:'academic',notes:'',time:''},
+  {id:'e16',title:'טקס ביאנלה',date:'2026-05-27',type:'social',notes:'יום א׳',time:'19:00'},
+  {id:'e_tanach1',title:'בימת שיתוף תנ״ך (בגרות)',date:'2026-05-27',type:'bagrut',notes:'י״ב 2+6',time:''},
+  {id:'e_tests9',title:'הכנה לטסטים',date:'2026-05-28',type:'academic',notes:'',time:''},
+  {id:'e17',title:'טקס ביאנלה',date:'2026-05-28',type:'social',notes:'יום ב׳',time:'19:00'},
   {id:'e18',title:'שבת פרידה',date:'2026-05-29',type:'shabbat',notes:'',time:''},
+  {id:'e_hof_tanach',title:'חופש לפני בגרות תנ״ך',date:'2026-05-31',type:'academic',notes:'',time:''},
+  {id:'e_tests_yam1',title:'טסטים ימאות',date:'2026-05-31',type:'academic',notes:'',time:''},
+  {id:'e_tests_yam2',title:'טסטים ימאות',date:'2026-06-01',type:'academic',notes:'',time:''},
+  {id:'e_bag_tanach',title:'📝 בגרות תנ״ך',date:'2026-06-01',type:'bagrut',notes:'',time:''},
+  {id:'e_tests_yam3',title:'טסטים ימאות',date:'2026-06-02',type:'academic',notes:'',time:''},
+  {id:'e_yom_haki',title:'יום מגמה חקי',date:'2026-06-02',type:'academic',notes:'',time:''},
+  {id:'e_tests_yam4',title:'טסטים ימאות',date:'2026-06-03',type:'academic',notes:'',time:''},
+  {id:'e_sim_chang',title:'סיום מגמת חנ״ג',date:'2026-06-03',type:'academic',notes:'בוקר',time:''},
+  {id:'e_haki_bio2',title:'מתכונת חקי ביולוגיה 2',date:'2026-06-03',type:'academic',notes:'',time:''},
+  {id:'e_music_met',title:'מתכונת מוזיקה',date:'2026-06-03',type:'academic',notes:'',time:''},
+  {id:'e_party',title:'🎉 מסיבת סיום שנה',date:'2026-06-04',type:'social',notes:'',time:''},
   {id:'e19',title:'שבת אחרונה',date:'2026-06-05',type:'shabbat',notes:'',time:''},
-  {id:'e20',title:'טקס סיום',date:'2026-06-17',type:'event',notes:'🎓',time:'18:00'},
+  {id:'e_prom',title:'🎉 פרום י״ב',date:'2026-06-06',type:'social',notes:'',time:''},
+  {id:'e_tests_yam5',title:'טסטים ימאות',date:'2026-06-07',type:'academic',notes:'',time:''},
+  {id:'e_tests_yam6',title:'טסטים ימאות',date:'2026-06-08',type:'academic',notes:'',time:''},
+  {id:'e_bag_art',title:'📝 בגרות אומנות חיצוני',date:'2026-06-08',type:'bagrut',notes:'',time:''},
+  {id:'e_bag_bio_p',title:'📝 בגרות פנימית ביולוגיה חקי',date:'2026-06-08',type:'bagrut',notes:'',time:''},
+  {id:'e_geo_met2',title:'מתכונת גאוגרפיה ומוזיקה',date:'2026-06-08',type:'academic',notes:'',time:''},
+  {id:'e_bag_agri',title:'📝 בגרות חקלאות חקי',date:'2026-06-11',type:'bagrut',notes:'',time:''},
+  {id:'e_bag_socio',title:'📝 בגרות פנימית סוציולוגיה',date:'2026-06-11',type:'bagrut',notes:'',time:''},
+  {id:'e_bag_lit',title:'📝 בגרות ספרות',date:'2026-06-11',type:'bagrut',notes:'',time:''},
+  {id:'e_bag_comm',title:'📝 בגרות תקשורת (זום)',date:'2026-06-11',type:'bagrut',notes:'',time:''},
+  {id:'e_bag_tanach2',title:'📝 בגרות פנימית תנ״ך',date:'2026-06-11',type:'bagrut',notes:'י״ב 4+5',time:''},
+  {id:'e_music_rehear',title:'חזרות ערב מוזיקה',date:'2026-06-15',type:'academic',notes:'',time:''},
+  {id:'e_sachna',title:'אופציה סחנה בית ספר',date:'2026-06-15',type:'social',notes:'',time:''},
+  {id:'e_music_eve',title:'🎵 ערב מגמת מוזיקה',date:'2026-06-16',type:'social',notes:'',time:''},
+  {id:'e20',title:'🎓 טקס סיום פנימייה',date:'2026-06-17',type:'social',notes:'',time:'18:00'},
+  {id:'e_bag_geo2',title:'📝 בגרות גאוגרפיה',date:'2026-06-22',type:'bagrut',notes:'',time:''},
+  {id:'e_app_yam1',title:'בוחן אפליקציות ימאות',date:'2026-06-22',type:'academic',notes:'השלמה',time:''},
+  {id:'e_bag_music',title:'📝 בגרות מוזיקה',date:'2026-06-25',type:'bagrut',notes:'',time:''},
+  {id:'e_bag_geo3',title:'📝 בגרות גאוגרפיה',date:'2026-06-29',type:'bagrut',notes:'',time:''},
+  {id:'e_app_yam2',title:'בוחן אפליקציות ימאות',date:'2026-06-29',type:'academic',notes:'השלמה',time:''},
+  {id:'e_bag_eng_b2',title:'📝 מועד ב׳ אנגלית',date:'2026-06-30',type:'bagrut',notes:'',time:''},
+  {id:'e_bag_math_b',title:'📝 מועד ב׳ מתמטיקה',date:'2026-07-06',type:'bagrut',notes:'',time:''},
+  {id:'e_bag_lashon_b',title:'📝 מועד ב׳ לשון',date:'2026-07-09',type:'bagrut',notes:'',time:''},
+  {id:'e_course1',title:'קורס סגנים מפקדים',date:'2026-07-21',type:'trip',notes:'',time:''},
+  {id:'e_course2',title:'קורס סגנים מפקדים',date:'2026-07-22',type:'trip',notes:'',time:''},
+  {id:'e_course3',title:'קורס סגנים מפקדים',date:'2026-07-23',type:'trip',notes:'',time:''},
+  {id:'e_course4',title:'קורס סגנים מפקדים',date:'2026-07-24',type:'trip',notes:'',time:''},
+  {id:'e_course5',title:'קורס סגנים מפקדים',date:'2026-07-25',type:'trip',notes:'',time:''},
+  {id:'e_course6',title:'קורס סגנים מפקדים',date:'2026-07-26',type:'trip',notes:'',time:''},
+  {id:'e_course7',title:'קורס סגנים מפקדים',date:'2026-07-27',type:'trip',notes:'',time:''},
+  {id:'e_course8',title:'קורס סגנים מפקדים',date:'2026-07-28',type:'trip',notes:'',time:''},
+  {id:'e_course9',title:'קורס סגנים מפקדים',date:'2026-07-29',type:'trip',notes:'',time:''},
 ];}
+
 
 function getDefaultTasks(){return[
   {id:'t1',title:'שבת פרידה – הכנות',assignee:'חני',status:'לביצוע',date:'2026-05-25',time:'10:00',notes:'',subtasks:[
