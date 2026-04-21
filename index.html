@@ -166,20 +166,26 @@ body{font-family:'Heebo',sans-serif;background:var(--bg);color:var(--text);min-h
 .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--navy);color:#fff;padding:10px 22px;border-radius:9px;font-size:13px;z-index:999;opacity:0;transition:opacity .3s;pointer-events:none;}
 .toast.show{opacity:1;}
 
+/* Bottom nav – מוצג רק בנייד */
+.bottom-nav{display:none;}
+.bottom-nav-inner{display:flex;justify-content:space-around;align-items:center;height:58px;}
+.bn-btn{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;flex:1;height:100%;background:none;border:none;color:rgba(255,255,255,0.45);font-family:'Heebo',sans-serif;font-size:10px;font-weight:500;cursor:pointer;transition:color .18s;-webkit-tap-highlight-color:transparent;}
+.bn-btn svg{stroke:currentColor;}
+.bn-btn.active{color:var(--gold-light);}
+
 /* ── MOBILE ── */
 @media (max-width: 768px) {
-  .bottom-nav{display:none !important;}
-  /* Topbar – שתי שורות */
-  .topbar{padding:0 12px;height:auto;flex-wrap:wrap;padding-top:10px;padding-bottom:0;}
-  .logo{font-size:16px;width:100%;margin-bottom:6px;}
-  .logo .badge{font-size:10px;}
-  /* ניווט – שורה שנייה מתחת ללוגו */
-  .nav{display:flex;margin-right:0;width:100%;overflow-x:auto;gap:2px;padding-bottom:8px;-webkit-overflow-scrolling:touch;}
-  .nav-btn{font-size:12px;padding:7px 12px;white-space:nowrap;flex-shrink:0;}
-  /* מסתיר את בוחר המשתמש בשורת הלוגו – יש בהגדרות */
+  /* הצג ניווט תחתון */
+  .bottom-nav{display:block;position:fixed;bottom:0;left:0;right:0;background:var(--navy);border-top:2px solid rgba(200,146,42,0.4);z-index:100;padding-bottom:env(safe-area-inset-bottom,0);}
+  /* הסתר ניווט עליון */
+  .nav{display:none;}
   .user-sel{display:none;}
-  /* Views */
-  .view{padding:14px 12px 30px;}
+  /* Topbar – שורה אחת עם לוגו + כפתור הגדרות */
+  .topbar{padding:0 14px;height:52px;flex-wrap:nowrap;}
+  .logo{font-size:16px;}
+  .logo .badge{font-size:9px;}
+  /* Views – רווח תחתון לניווט */
+  .view{padding:14px 12px 80px;}
   .sec-title{font-size:17px;}
   /* Stats */
   .stats-row{grid-template-columns:repeat(3,1fr);gap:7px;}
@@ -214,18 +220,17 @@ body{font-family:'Heebo',sans-serif;background:var(--bg);color:var(--text);min-h
   .modal h2{font-size:16px;margin-bottom:14px;}
   .frow{grid-template-columns:1fr;}
   .type-chip{padding:6px 10px;font-size:11px;}
-  /* Upcoming */
   #upcoming > div{padding:10px 12px;gap:10px;}
   #upcoming > div > div:first-child{min-width:44px;padding:6px 8px;}
   #urgent-tasks > div{padding:9px 12px;}
 }
 
-/* Landscape phone */
-@media (max-width: 768px) and (orientation: landscape) {
+/* Landscape */
+@media (max-width: 768px) and (orientation:landscape){
   .stats-row{grid-template-columns:repeat(5,1fr);}
-  .topbar{flex-wrap:nowrap;height:46px;padding-top:0;padding-bottom:0;}
-  .logo{width:auto;margin-bottom:0;}
-  .nav{width:auto;padding-bottom:0;overflow-x:auto;}
+  .bottom-nav-inner{height:48px;}
+  .bn-btn{font-size:9px;}
+  .view{padding-bottom:60px;}
 }
 </style>
 </head>
