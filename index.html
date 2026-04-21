@@ -269,6 +269,31 @@ body{font-family:'Heebo',sans-serif;background:var(--bg);color:var(--text);min-h
 </head>
 <body>
 
+<!-- SETTINGS PANEL (כפתור צדדי) -->
+<div id="settings-panel" style="display:none;position:fixed;top:0;right:0;bottom:0;width:300px;background:var(--navy);z-index:300;padding:24px 20px;box-shadow:-4px 0 24px rgba(0,0,0,0.3);direction:rtl;overflow-y:auto;">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+    <span style="color:#fff;font-size:16px;font-weight:700;">⚙️ הגדרות חיבור</span>
+    <button onclick="document.getElementById('settings-panel').style.display='none'" style="background:rgba(255,255,255,0.1);border:none;color:#fff;width:32px;height:32px;border-radius:50%;font-size:18px;cursor:pointer;">✕</button>
+  </div>
+  <div style="margin-bottom:12px;">
+    <div class="sync-dot loading" id="sync-dot" style="display:inline-block;margin-left:6px;"></div>
+    <span id="sync-status" style="font-size:12px;color:rgba(255,255,255,0.6);">לא מחובר</span>
+  </div>
+  <label style="color:rgba(255,255,255,0.6);font-size:11px;font-weight:700;letter-spacing:1px;display:block;margin-bottom:6px;">כתובת Apps Script</label>
+  <input class="api-input" id="api-url" placeholder="https://script.google.com/macros/s/XXXX/exec" style="width:100%;margin-bottom:10px;">
+  <button class="save-url-btn" onclick="saveApiUrl()" style="width:100%;padding:10px;font-size:14px;border-radius:8px;">חבר ל-Google Sheets</button>
+  <div style="margin-top:16px;border-top:1px solid rgba(255,255,255,0.1);padding-top:16px;">
+    <button onclick="loadAll()" style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:#fff;padding:8px 16px;border-radius:6px;font-size:13px;cursor:pointer;width:100%;">↻ רענן נתונים</button>
+  </div>
+  <div style="margin-top:12px;">
+    <label style="color:rgba(255,255,255,0.6);font-size:11px;font-weight:700;letter-spacing:1px;display:block;margin-bottom:6px;">מחובר כ:</label>
+    <select class="user-select" id="cur-user" onchange="currentUser=this.value" style="width:100%;padding:8px 12px;">
+      <option>יובל</option><option>עמי</option><option>חני</option><option>אודי</option><option>גיא</option><option>אלעד</option>
+    </select>
+  </div>
+</div>
+<div id="settings-overlay" style="display:none;position:fixed;inset:0;z-index:299;" onclick="document.getElementById('settings-panel').style.display='none';document.getElementById('settings-overlay').style.display='none';"></div>
+
 <div class="topbar">
   <div class="logo">
     <span>י״ב אלמוג</span>
@@ -280,23 +305,16 @@ body{font-family:'Heebo',sans-serif;background:var(--bg);color:var(--text);min-h
     <button class="nav-btn" onclick="showView('tasks',this)">✅ משימות</button>
     <button class="nav-btn" onclick="showView('team',this)">👥 צוות</button>
   </div>
-  <div class="user-sel">
-    <span class="user-lbl">מחובר:</span>
-    <select class="user-select" id="cur-user" onchange="currentUser=this.value">
-      <option>עמי</option><option>חני</option><option>אודי</option><option>גיא</option><option>אלעד</option>
-    </select>
+  <div style="display:flex;align-items:center;gap:10px;margin-right:auto;">
+    <div class="sync-dot loading" id="sync-dot-top" style="width:7px;height:7px;border-radius:50%;background:var(--gold);animation:pulse 1s infinite;"></div>
+    <div class="user-sel" style="display:flex;align-items:center;gap:7px;">
+      <span class="user-lbl">מחובר:</span>
+      <select class="user-select" id="cur-user-top" onchange="currentUser=this.value;document.getElementById('cur-user').value=this.value;">
+        <option>יובל</option><option>עמי</option><option>חני</option><option>אודי</option><option>גיא</option><option>אלעד</option>
+      </select>
+    </div>
+    <button onclick="openSettings()" title="הגדרות חיבור" style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:#fff;padding:5px 10px;border-radius:6px;font-size:14px;cursor:pointer;">⚙️</button>
   </div>
-</div>
-
-<div class="sync-bar" id="sync-bar">
-  <div class="sync-dot loading" id="sync-dot"></div>
-  <div class="api-setup">
-    <span id="sync-label">הכנס כתובת Apps Script:</span>
-    <input class="api-input" id="api-url" placeholder="https://script.google.com/macros/s/XXXX/exec" value="">
-    <button class="save-url-btn" onclick="saveApiUrl()">חבר</button>
-  </div>
-  <span id="sync-status" style="margin-right:auto;font-size:11px;"></span>
-  <button onclick="loadAll()" style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:#fff;padding:3px 10px;border-radius:4px;font-size:11px;cursor:pointer;">↻ רענן</button>
 </div>
 
 <!-- ═══ OVERVIEW ═══ -->
@@ -415,16 +433,20 @@ body{font-family:'Heebo',sans-serif;background:var(--bg);color:var(--text);min-h
 <div class="bottom-nav">
   <div class="bottom-nav-inner">
     <button class="bn-btn active" id="bn-overview" onclick="showView('overview',null,this)">
-      <span class="bn-icon">🏠</span><span>סקירה</span>
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      <span>סקירה</span>
     </button>
     <button class="bn-btn" id="bn-calendar" onclick="showView('calendar',null,this)">
-      <span class="bn-icon">📅</span><span>לו״ז</span>
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      <span>לו״ז</span>
     </button>
     <button class="bn-btn" id="bn-tasks" onclick="showView('tasks',null,this)">
-      <span class="bn-icon">✅</span><span>משימות</span>
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+      <span>משימות</span>
     </button>
     <button class="bn-btn" id="bn-team" onclick="showView('team',null,this)">
-      <span class="bn-icon">👥</span><span>צוות</span>
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      <span>צוות</span>
     </button>
   </div>
 </div>
@@ -435,7 +457,8 @@ body{font-family:'Heebo',sans-serif;background:var(--bg);color:var(--text);min-h
 // ══════════════════════════════
 // CONFIG & STATE
 // ══════════════════════════════
-const COLORS = {עמי:'#1a2744',חני:'#2a7a6e',אודי:'#c8922a',גיא:'#7c3aed',אלעד:'#c0452a'};
+const COLORS = {יובל:'#0f766e',עמי:'#1a2744',חני:'#2a7a6e',אודי:'#c8922a',גיא:'#7c3aed',אלעד:'#c0452a'};
+const MEMBERS = ['יובל','עמי','חני','אודי','גיא','אלעד'];
 const MONTHS = {4:'אפריל',5:'מאי',6:'יוני',7:'יולי'};
 
 function getChipClass(e) {
@@ -468,10 +491,22 @@ if (API_URL) { document.getElementById('api-url').value = API_URL; }
 // API HELPERS
 // ══════════════════════════════
 function setSyncState(state, msg='') {
-  const dot = document.getElementById('sync-dot');
+  ['sync-dot','sync-dot-top'].forEach(id => {
+    const dot = document.getElementById(id);
+    if (!dot) return;
+    dot.className = 'sync-dot ' + (state==='ok'?'':state==='err'?'err':'loading');
+    dot.style.animation = state==='loading'?'pulse 1s infinite':'none';
+    dot.style.background = state==='ok'?'#34d399':state==='err'?'#fb7185':'var(--gold)';
+  });
   const lbl = document.getElementById('sync-status');
-  dot.className = 'sync-dot ' + (state==='ok'?'':state==='err'?'err':'loading');
-  lbl.textContent = msg;
+  if (lbl) lbl.textContent = msg;
+}
+
+function openSettings() {
+  const saved = localStorage.getItem('yb_api_url')||'';
+  document.getElementById('api-url').value = saved;
+  document.getElementById('settings-panel').style.display = 'block';
+  document.getElementById('settings-overlay').style.display = 'block';
 }
 
 async function apiGet(params) {
@@ -889,7 +924,7 @@ async function deleteEvent(id){
 function renderTeam(){
   const grid=document.getElementById('team-grid');
   grid.innerHTML='';
-  ['עמי','חני','אודי','גיא','אלעד'].forEach(name=>{
+  MEMBERS.forEach(name=>{
     const color=COLORS[name];
     const myT=tasksCache.filter(t=>t.assignee===name);
     const allSubs=tasksCache.flatMap(t=>(t.subtasks||[]).filter(s=>s.assignee===name));
@@ -898,10 +933,11 @@ function renderTeam(){
     const active=myT.filter(t=>t.status!=='הושלם');
     const card=document.createElement('div');
     card.className='m-card';
+    const isYuval = name==='יובל';
     card.innerHTML=`
       <div class="m-head">
-        <div class="m-avatar" style="background:${color}">${name[0]}</div>
-        <div><div class="m-name">${name}</div><div class="m-role">${myT.length} משימות אב</div></div>
+        <div class="m-avatar" style="background:${color}">${name[0]}${isYuval?'<span style="font-size:10px;position:absolute;bottom:-2px;right:-2px;">👑</span>':''}</div>
+        <div><div class="m-name">${name}${isYuval?' 👑':''}</div><div class="m-role">${isYuval?'רכז קהילה':myT.length+' משימות אב'}</div></div>
       </div>
       <div style="margin-bottom:12px;">
         <div class="prog-lbl"><span>התקדמות</span><span>${pct}%</span></div>
