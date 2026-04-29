@@ -419,11 +419,13 @@ body{font-family:'Heebo',sans-serif;background:var(--bg);color:var(--text);min-h
 
 <script>
 // ══════════════════════════════
-// CONFIG & STATE
+// FIREBASE CONFIG
 // ══════════════════════════════
+const FB_URL = 'https://yudbet-almog-default-rtdb.europe-west1.firebasedatabase.app';
 const COLORS = {יובל:'#0f766e',עמי:'#1a2744',חני:'#2a7a6e',אודי:'#c8922a',גיא:'#7c3aed',אלעד:'#c0452a'};
 const MEMBERS = ['יובל','עמי','חני','אודי','גיא','אלעד'];
-const MONTHS = {4:'אפריל',5:'מאי',6:'יוני',7:'יולי'};
+const MONTHS  = {4:'אפריל',5:'מאי',6:'יוני',7:'יולי'};
+const DAYS    = ['א׳','ב׳','ג׳','ד׳','ה׳','ו׳','ש׳'];
 
 function getChipClass(e) {
   if(e.type==='shabbat') return 'chip-shabbat';
@@ -435,98 +437,133 @@ function getChipClass(e) {
   if(e.type==='social') return 'chip-social';
   return 'chip-event';
 }
-
 function getChipLabel(e) {
   const icons = {shabbat:'🕯️',bagrut:'📝',academic:'📚',trip:'⛵',social:'🎉',deadline:'🔴',task:'📌'};
   const icon = icons[e.type] || '';
   return icon ? icon+' '+e.title : e.title;
 }
-const DAYS   = ['א׳','ב׳','ג׳','ד׳','ה׳','ו׳','ש׳'];
 
 let currentUser = 'יובל';
-let API_URL = localStorage.getItem('yb_api_url') || 'https://script.google.com/macros/s/AKfycbznBJzKE-C5P781mNU4_HeCeByGO-eHJpgXm7aZimwcsWGrUpDoMs9fUnGjy6sdETINqw/exec';
 let eventsCache = [];
 let tasksCache  = [];
 
-// Restore URL if saved
-if (API_URL) { document.getElementById('api-url').value = API_URL; }
-
-// ══════════════════════════════
-// API HELPERS
-// ══════════════════════════════
 function setSyncState(state, msg='') {
   ['sync-dot','sync-dot-top'].forEach(id => {
     const dot = document.getElementById(id);
     if (!dot) return;
-    dot.className = 'sync-dot ' + (state==='ok'?'':state==='err'?'err':'loading');
-    dot.style.animation = state==='loading'?'pulse 1s infinite':'none';
     dot.style.background = state==='ok'?'#34d399':state==='err'?'#fb7185':'var(--gold)';
+    dot.style.animation  = state==='loading'?'pulse 1s infinite':'none';
   });
   const lbl = document.getElementById('sync-status');
   if (lbl) lbl.textContent = msg;
 }
 
 function openSettings() {
-  const saved = localStorage.getItem('yb_api_url')||'';
-  document.getElementById('api-url').value = saved;
   document.getElementById('settings-panel').style.display = 'block';
   document.getElementById('settings-overlay').style.display = 'block';
 }
 
-async function apiGet(params) {
-  if (!API_URL) return null;
-  const url = API_URL + '?' + new URLSearchParams(params);
-  const r = await fetch(url);
+// ── Firebase REST helpers ──────────────────────
+async function fbGet(path) {
+  const r = await fetch(`${FB_URL}${path}.json`);
   if (!r.ok) throw new Error('HTTP '+r.status);
   return r.json();
 }
 
-async function apiPost(body) {
-  if (!API_URL) return null;
-  const r = await fetch(API_URL, {
-    method:'POST',
-    headers:{'Content-Type':'application/json'},
-    body: JSON.stringify(body)
+async function fbSet(path, data) {
+  const r = await fetch(`${FB_URL}${path}.json`, {
+    method: 'PUT',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify(data)
   });
   if (!r.ok) throw new Error('HTTP '+r.status);
   return r.json();
 }
 
-function saveApiUrl() {
-  const url = document.getElementById('api-url').value.trim();
-  if (!url) return;
-  API_URL = url;
-  localStorage.setItem('yb_api_url', url);
-  document.getElementById('sync-label').textContent = 'מחובר ל-Google Sheets';
-  loadAll();
+async function fbPush(path, data) {
+  const r = await fetch(`${FB_URL}${path}.json`, {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify(data)
+  });
+  if (!r.ok) throw new Error('HTTP '+r.status);
+  return r.json(); // returns {name: firebaseKey}
 }
 
+async function fbDelete(path) {
+  await fetch(`${FB_URL}${path}.json`, { method: 'DELETE' });
+}
+
+async function fbPatch(path, data) {
+  const r = await fetch(`${FB_URL}${path}.json`, {
+    method: 'PATCH',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify(data)
+  });
+  if (!r.ok) throw new Error('HTTP '+r.status);
+  return r.json();
+}
+
+// ── Load & Sync ────────────────────────────────
 async function loadAll() {
-  if (!API_URL) { loadFromLocal(); return; }
-  setSyncState('loading','טוען...');
+  setSyncState('loading','מתחבר...');
   try {
-    const data = await apiGet({action:'getAll'});
-    if (data.error) throw new Error(data.error);
-    eventsCache = data.events || [];
-    tasksCache  = data.tasks  || [];
-    setSyncState('ok','עודכן: '+new Date().toLocaleTimeString('he'));
+    const data = await fbGet('/');
+    // אם אין נתונים ב-Firebase – העלה ברירות מחדל
+    if (!data || (!data.events && !data.tasks)) {
+      await initFirebaseData();
+    } else {
+      eventsCache = data.events ? Object.entries(data.events).map(([k,v])=>({...v,_key:k})) : [];
+      tasksCache  = data.tasks  ? Object.entries(data.tasks).map(([k,v])=>({
+        ...v, _key:k,
+        subtasks: v.subtasks ? Object.entries(v.subtasks).map(([sk,sv])=>({...sv,_key:sk})) : []
+      })) : [];
+    }
+    setSyncState('ok','מסונכרן ✓ '+new Date().toLocaleTimeString('he'));
     renderAll();
-    toast('נתונים נטענו מ-Google Sheets ✓');
+    // הפעל האזנה לשינויים בזמן אמת (polling כל 8 שניות)
+    setInterval(silentRefresh, 8000);
   } catch(e) {
-    setSyncState('err','שגיאת חיבור – משתמש בנתונים מקומיים');
+    setSyncState('err','שגיאת חיבור');
     loadFromLocal();
   }
+}
+
+async function silentRefresh() {
+  try {
+    const data = await fbGet('/');
+    if (!data) return;
+    eventsCache = data.events ? Object.entries(data.events).map(([k,v])=>({...v,_key:k})) : [];
+    tasksCache  = data.tasks  ? Object.entries(data.tasks).map(([k,v])=>({
+      ...v, _key:k,
+      subtasks: v.subtasks ? Object.entries(v.subtasks).map(([sk,sv])=>({...sv,_key:sk})) : []
+    })) : [];
+    setSyncState('ok','מסונכרן ✓ '+new Date().toLocaleTimeString('he'));
+    renderAll();
+  } catch(e) {}
+}
+
+async function initFirebaseData() {
+  setSyncState('loading','מעלה נתונים ראשוניים...');
+  const evs = getDefaultEvents();
+  const tasks = getDefaultTasks();
+  const evObj = {};
+  evs.forEach(e => { evObj[e.id] = e; });
+  const taskObj = {};
+  tasks.forEach(t => {
+    const subs = {};
+    (t.subtasks||[]).forEach(s => { subs[s.id] = s; });
+    taskObj[t.id] = {...t, subtasks: subs};
+  });
+  await fbSet('/', { events: evObj, tasks: taskObj });
+  eventsCache = evs.map(e=>({...e,_key:e.id}));
+  tasksCache  = tasks.map(t=>({...t,_key:t.id,subtasks:(t.subtasks||[]).map(s=>({...s,_key:s.id}))}));
 }
 
 function loadFromLocal() {
   try { eventsCache = JSON.parse(localStorage.getItem('yb_events')) || getDefaultEvents(); } catch { eventsCache = getDefaultEvents(); }
   try { tasksCache  = JSON.parse(localStorage.getItem('yb_tasks'))  || getDefaultTasks();  } catch { tasksCache  = getDefaultTasks();  }
   renderAll();
-}
-
-function saveLocal() {
-  localStorage.setItem('yb_events', JSON.stringify(eventsCache));
-  localStorage.setItem('yb_tasks',  JSON.stringify(tasksCache));
 }
 
 function renderAll() {
@@ -536,6 +573,92 @@ function renderAll() {
   if (active?.id==='view-tasks')    renderTasks();
   if (active?.id==='view-team')     renderTeam();
 }
+
+// ── Events CRUD ────────────────────────────────
+async function addEventToFB(ev) {
+  await fbSet(`/events/${ev.id}`, ev);
+  eventsCache.push({...ev,_key:ev.id});
+  renderCalendar(); renderOverview();
+  toast('אירוע נוסף ✓');
+}
+
+async function deleteEvent(id) {
+  const ev = eventsCache.find(e=>e.id===id||e._key===id);
+  if (!ev) return;
+  await fbDelete(`/events/${ev._key||ev.id}`);
+  eventsCache = eventsCache.filter(e=>(e.id!==id&&e._key!==id));
+  renderCalendar(); renderOverview();
+  toast('אירוע נמחק');
+}
+
+// ── Tasks CRUD ─────────────────────────────────
+async function addTaskToFB(task) {
+  const subs = {};
+  (task.subtasks||[]).forEach(s=>{ subs[s.id]=s; });
+  await fbSet(`/tasks/${task.id}`, {...task, subtasks:subs});
+  tasksCache.push({...task,_key:task.id});
+  renderTasks(); renderOverview(); renderCalendar();
+  toast('משימה נשמרה ✓');
+}
+
+async function updateTaskInFB(task) {
+  const subs = {};
+  (task.subtasks||[]).forEach(s=>{ subs[s._key||s.id]=s; });
+  await fbPatch(`/tasks/${task._key||task.id}`, {
+    title:task.title, assignee:task.assignee, status:task.status,
+    date:task.date, time:task.time, notes:task.notes, subtasks:subs
+  });
+  const idx = tasksCache.findIndex(t=>t.id===task.id||t._key===task._key);
+  if (idx>=0) tasksCache[idx] = task;
+  renderTasks(); renderOverview(); renderCalendar();
+  toast('משימה עודכנה ✓');
+}
+
+async function deleteTask(id) {
+  if(!confirm('למחוק משימה זו?'))return;
+  const t = tasksCache.find(t=>t.id===id||t._key===id);
+  if (!t) return;
+  await fbDelete(`/tasks/${t._key||t.id}`);
+  tasksCache = tasksCache.filter(t=>t.id!==id&&t._key!==id);
+  renderTasks(); renderOverview();
+  toast('משימה נמחקה');
+}
+
+async function toggleSub(tid,sid) {
+  const task = tasksCache.find(t=>t.id===tid||t._key===tid);
+  if (!task) return;
+  const sub  = task.subtasks.find(s=>s.id===sid||s._key===sid);
+  if (!sub)  return;
+  sub.done = !sub.done;
+  await fbPatch(`/tasks/${task._key||task.id}/subtasks/${sub._key||sub.id}`, {done:sub.done});
+  renderTasks(); renderOverview();
+}
+
+async function deleteSub(tid,sid) {
+  const task = tasksCache.find(t=>t.id===tid||t._key===tid);
+  if (!task) return;
+  const sub  = task.subtasks.find(s=>s.id===sid||s._key===sid);
+  if (!sub)  return;
+  await fbDelete(`/tasks/${task._key||task.id}/subtasks/${sub._key||sub.id}`);
+  task.subtasks = task.subtasks.filter(s=>s.id!==sid&&s._key!==sid);
+  renderTasks();
+}
+
+async function quickAddSub(tid) {
+  const title    = document.getElementById('ns-'+tid).value.trim();
+  if (!title) return;
+  const assignee = document.getElementById('ns-ass-'+tid).value;
+  const date     = document.getElementById('ns-date-'+tid).value;
+  const task     = tasksCache.find(t=>t.id===tid||t._key===tid);
+  if (!task) return;
+  const sid = 's'+Date.now();
+  const sub = {id:sid,_key:sid,title,assignee,date,time:'',done:false};
+  await fbSet(`/tasks/${task._key||task.id}/subtasks/${sid}`, sub);
+  task.subtasks.push(sub);
+  renderTasks(); renderCalendar();
+  toast('משימת משנה נוספה');
+}
+
 
 // ══════════════════════════════
 // NAV
@@ -831,19 +954,14 @@ async function saveTask(){
     time:document.getElementById('mt-time').value,
     notes:document.getElementById('mt-notes').value
   };
+  closeModal('m-task');
   if(editId){
-    const t=tasksCache.find(t=>t.id===editId);
-    if(t) Object.assign(t,data);
-    if(API_URL) try{ await apiPost({action:'updateTask',data:{...data,id:editId}}); }catch(e){}
+    const t=tasksCache.find(t=>t.id===editId||t._key===editId);
+    if(t){ Object.assign(t,data); await updateTaskInFB(t); }
   } else {
     const newTask={id:'t'+Date.now(),...data,subtasks:[]};
-    tasksCache.push(newTask);
-    if(API_URL) try{ const r=await apiPost({action:'addTask',data}); if(r?.id) newTask.id=r.id; }catch(e){}
+    await addTaskToFB(newTask);
   }
-  saveLocal();
-  closeModal('m-task');
-  renderTasks(); renderOverview(); renderCalendar();
-  toast('משימה נשמרה ✓');
 }
 
 // ══════════════════════════════
@@ -856,25 +974,13 @@ async function saveEvent(){
   const title=document.getElementById('me-title').value.trim();
   const date=document.getElementById('me-date').value;
   if(!title||!date)return alert('נא למלא שם ותאריך');
-  const type=document.querySelector('.type-chip.sel')?.dataset.type||'event';
+  const type=document.querySelector('.type-chip.sel')?.dataset.type||'social';
   const ev={id:'e'+Date.now(),title,date,type,notes:document.getElementById('me-notes').value,time:document.getElementById('me-time').value};
-  eventsCache.push(ev);
-  saveLocal();
-  if(API_URL) try{ const r=await apiPost({action:'addEvent',data:ev}); if(r?.id) ev.id=r.id; }catch(e){}
   closeModal('m-event');
   document.getElementById('me-title').value='';
   document.getElementById('me-date').value='';
   document.getElementById('me-notes').value='';
-  renderCalendar(); renderOverview();
-  toast('אירוע נוסף ✓');
-}
-
-async function deleteEvent(id){
-  eventsCache=eventsCache.filter(e=>e.id!==id);
-  saveLocal();
-  if(API_URL) try{ await apiPost({action:'deleteEvent',id}); }catch(e){}
-  renderCalendar(); renderOverview();
-  toast('אירוע נמחק');
+  await addEventToFB(ev);
 }
 
 // ══════════════════════════════
@@ -1070,7 +1176,7 @@ function getDefaultTasks(){return[
 ];}
 
 // INIT
-loadFromLocal();
+loadAll();
 </script>
 </body>
 </html>
