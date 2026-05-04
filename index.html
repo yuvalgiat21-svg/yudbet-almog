@@ -284,8 +284,20 @@ body{font-family:'Heebo',sans-serif;background:var(--bg);color:var(--text);min-h
     <div id="sync-dot" style="width:8px;height:8px;border-radius:50%;background:var(--gold);animation:pulse 1s infinite;flex-shrink:0;"></div>
     <span id="sync-status" style="font-size:12px;color:rgba(255,255,255,0.6);">מתחבר...</span>
   </div>
-  <button onclick="loadAll()" style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:#fff;padding:7px 12px;border-radius:6px;font-size:12px;cursor:pointer;width:100%;margin-bottom:10px;">↻ רענן נתונים</button>
-  <div style="border-top:1px solid rgba(255,255,255,0.1);padding-top:12px;color:rgba(255,255,255,0.35);font-size:10px;">Firebase: yudbet-almog · סנכרון כל 8 שניות</div>
+  <button onclick="loadAll()" style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:#fff;padding:7px 12px;border-radius:6px;font-size:12px;cursor:pointer;width:100%;margin-bottom:16px;">↻ רענן נתונים</button>
+
+  <div style="border-top:1px solid rgba(255,255,255,0.15);padding-top:16px;margin-bottom:12px;">
+    <div style="color:rgba(255,255,255,0.7);font-size:12px;font-weight:700;margin-bottom:4px;">📅 Google Calendar</div>
+    <div style="display:flex;align-items:center;gap:6px;margin-bottom:10px;">
+      <div style="width:7px;height:7px;border-radius:50%;background:var(--gold);flex-shrink:0;" id="gcal-dot"></div>
+      <span id="gcal-status" style="font-size:11px;color:rgba(255,255,255,0.4);">לא מחובר</span>
+    </div>
+    <button id="gcal-connect-btn" onclick="connectGoogleCalendar()" style="background:var(--gold);color:var(--navy);border:none;padding:9px 14px;border-radius:7px;font-size:12px;font-weight:700;cursor:pointer;width:100%;margin-bottom:8px;">📅 התחבר ל-Google Calendar</button>
+    <button onclick="syncAllMyTasksToCalendar()" style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.2);color:#fff;padding:7px 12px;border-radius:6px;font-size:11px;cursor:pointer;width:100%;">↻ סנכרן כל המשימות עכשיו</button>
+    <div style="font-size:10px;color:rgba(255,255,255,0.3);margin-top:8px;line-height:1.5;">כל משימה שתוסיפו תתווסף אוטומטית ליומן Google שלכם</div>
+  </div>
+
+  <div style="border-top:1px solid rgba(255,255,255,0.1);padding-top:12px;color:rgba(255,255,255,0.3);font-size:10px;">Firebase: yudbet-almog · סנכרון כל 8 שניות</div>
 </div>
 <div class="settings-overlay" id="settings-overlay" onclick="closeSettings()"></div>
 
@@ -294,9 +306,9 @@ body{font-family:'Heebo',sans-serif;background:var(--bg);color:var(--text);min-h
   <div class="logo"><span>י״ב אלמוג</span><span class="badge">סיום שנה</span></div>
   <div class="nav">
     <button class="nav-btn active" onclick="showView('overview',this)">🏠 סקירה</button>
-    <button class="nav-btn" onclick="showView('projects',this)">📁 פרויקטים</button>
     <button class="nav-btn" onclick="showView('calendar',this)">📅 לו״ז</button>
     <button class="nav-btn" onclick="showView('tasks',this)">✅ משימות</button>
+    <button class="nav-btn" onclick="showView('projects',this)">📁 פרויקטים</button>
     <button class="nav-btn" onclick="showView('gantt',this)">📊 גאנט</button>
     <button class="nav-btn" id="insights-nav-btn" onclick="showView('insights',this)">💡 תובנות</button>
     <button class="nav-btn" onclick="showView('team',this)">👥 צוות</button>
@@ -508,22 +520,22 @@ body{font-family:'Heebo',sans-serif;background:var(--bg);color:var(--text);min-h
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
       <span>סקירה</span>
     </button>
-    <button class="bn-btn" id="bn-projects" onclick="showView('projects',null,this)">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
-      <span>פרויקטים</span>
+    <button class="bn-btn" id="bn-calendar" onclick="showView('calendar',null,this)">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      <span>לו״ז</span>
     </button>
     <button class="bn-btn" id="bn-tasks" onclick="showView('tasks',null,this)">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
       <span>משימות</span>
     </button>
-    <button class="bn-btn" id="bn-gantt" onclick="showView('gantt',null,this)">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="15" y2="12"/><line x1="3" y1="18" x2="18" y2="18"/></svg>
-      <span>גאנט</span>
-    </button>
     <button class="bn-btn" id="bn-insights" onclick="showView('insights',null,this)">
       <div class="bn-alert-dot" id="bn-insights-dot" style="display:none;"></div>
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
       <span>תובנות</span>
+    </button>
+    <button class="bn-btn" id="bn-gantt" onclick="showView('gantt',null,this)">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="15" y2="12"/><line x1="3" y1="18" x2="18" y2="18"/></svg>
+      <span>גאנט</span>
     </button>
   </div>
 </div>
@@ -772,7 +784,6 @@ function renderCalendar(){
     if(t.date)(evMap[t.date]||(evMap[t.date]=[])).push({...t,type:'task',title:'📌 '+t.title});
     (t.subtasks||[]).forEach(s=>{if(s.date)(evMap[s.date]||(evMap[s.date]=[])).push({...s,type:'task',title:'▸ '+s.title});});
   });
-  // Show project deadlines
   projectsCache.forEach(p=>{
     if(p.date)(evMap[p.date]||(evMap[p.date]=[])).push({...p,type:'project',title:'📁 '+p.name});
   });
@@ -780,16 +791,34 @@ function renderCalendar(){
   const start=new Date('2026-04-12'),end=new Date('2026-08-01');
   const today=new Date();today.setHours(0,0,0,0);
   let cur=new Date(start),lastM=-1;
+  let todayElement=null;
+
   while(cur<end){
     const m=cur.getMonth()+1;
-    if(m!==lastM){lastM=m;const md=document.createElement('div');md.className='month-div';md.textContent=MONTHS[m]||'';grid.appendChild(md);}
+    if(m!==lastM){
+      lastM=m;
+      const md=document.createElement('div');
+      md.className='month-div';
+      md.textContent=MONTHS[m]||'';
+      grid.appendChild(md);
+    }
     const row=document.createElement('div');row.className='week-row-mobile';
     for(let d=0;d<7;d++){
       const cell=document.createElement('div');
       const ds=cur.toISOString().split('T')[0];
       const dw=(cur.getDay()+1)%7;
-      cell.className='day-cell-mobile'+(cur.getTime()===today.getTime()?' today':'');
+      const isToday=cur.getTime()===today.getTime();
+      cell.className='day-cell-mobile'+(isToday?' today':'');
       cell.innerHTML=`<div class="day-header-mobile"><span class="day-name-mobile">${DAY_NAMES[dw]}</span><span class="day-date-mobile">${cur.getDate()}.${cur.getMonth()+1}</span></div>`;
+      if(isToday){
+        todayElement=cell;
+        // Add "היום" label
+        cell.style.borderWidth='2px';
+        const todayTag=document.createElement('div');
+        todayTag.style.cssText='background:var(--gold);color:var(--navy);font-size:7px;font-weight:700;border-radius:3px;padding:1px 4px;text-align:center;margin-bottom:2px;';
+        todayTag.textContent='היום';
+        cell.querySelector('.day-header-mobile').appendChild(todayTag);
+      }
       (evMap[ds]||[]).forEach(e=>{
         const chip=document.createElement('span');
         chip.className='ev-chip '+getChipClass(e);
@@ -803,6 +832,18 @@ function renderCalendar(){
     }
     grid.appendChild(row);
   }
+
+  // Scroll to today
+  setTimeout(()=>{
+    if(todayElement){
+      const calWrapper=document.querySelector('.cal-wrapper');
+      if(calWrapper){
+        const offset=todayElement.getBoundingClientRect().top + window.scrollY - 120;
+        window.scrollTo({top:offset, behavior:'smooth'});
+      }
+      todayElement.scrollIntoView({behavior:'smooth',block:'center'});
+    }
+  },150);
 }
 
 // ════════════════════════════════════════
@@ -1376,6 +1417,8 @@ async function saveTask(){
     tasksCache.push({...newTask,_key:id});
   }
   renderAll();toast('נשמר ✓');
+  // סנכרן ליומן אוטומטית
+  if (gcalConnected) syncTaskToCalendar(editId ? tasksCache.find(t=>t._key===editId||t.id===editId) : tasksCache[tasksCache.length-1]);
 }
 
 // ════════════════════════════════════════
@@ -1636,8 +1679,197 @@ function getDefaultTasks(){return[
   ]},
 ];}
 
+// ════════════════════════════════════════
+// GOOGLE CALENDAR INTEGRATION
+// ════════════════════════════════════════
+const GCAL_CLIENT_ID = '326010980266-q65hmjfvob8unbh1ube3kc1qhp9cmrb9.apps.googleusercontent.com';
+const GCAL_SCOPES = 'https://www.googleapis.com/auth/calendar.events';
+const GCAL_DISCOVERY = 'https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest';
+
+let gapiReady = false;
+let gcalConnected = false;
+let gcalToken = null;
+
+// Load Google API
+function loadGoogleApi() {
+  const script = document.createElement('script');
+  script.src = 'https://apis.google.com/js/api.js';
+  script.onload = () => {
+    gapi.load('client', async () => {
+      await gapi.client.init({
+        discoveryDocs: [GCAL_DISCOVERY],
+      });
+      gapiReady = true;
+      // Check if token already saved
+      const saved = localStorage.getItem('gcal_token');
+      if (saved) {
+        try {
+          gcalToken = JSON.parse(saved);
+          gapi.client.setToken(gcalToken);
+          gcalConnected = true;
+          updateCalendarUI();
+        } catch(e) {}
+      }
+    });
+  };
+  document.head.appendChild(script);
+
+  // Load GIS (Google Identity Services)
+  const gis = document.createElement('script');
+  gis.src = 'https://accounts.google.com/gsi/client';
+  document.head.appendChild(gis);
+}
+
+function connectGoogleCalendar() {
+  if (!gapiReady) { toast('ממתין לטעינת Google...'); return; }
+  const client = google.accounts.oauth2.initTokenClient({
+    client_id: GCAL_CLIENT_ID,
+    scope: GCAL_SCOPES,
+    callback: async (resp) => {
+      if (resp.error) { toast('שגיאה בחיבור: ' + resp.error); return; }
+      gcalToken = resp;
+      gcalConnected = true;
+      gapi.client.setToken(gcalToken);
+      localStorage.setItem('gcal_token', JSON.stringify(gcalToken));
+      updateCalendarUI();
+      toast('✓ מחובר ל-Google Calendar!');
+      // Sync all tasks for current user
+      await syncAllMyTasksToCalendar();
+    }
+  });
+  client.requestAccessToken();
+}
+
+function disconnectGoogleCalendar() {
+  if (gcalToken) google.accounts.oauth2.revoke(gcalToken.access_token, ()=>{});
+  gcalToken = null;
+  gcalConnected = false;
+  gapi.client.setToken('');
+  localStorage.removeItem('gcal_token');
+  localStorage.removeItem('gcal_event_ids');
+  updateCalendarUI();
+  toast('התנתקת מ-Google Calendar');
+}
+
+function updateCalendarUI() {
+  const btn = document.getElementById('gcal-connect-btn');
+  const status = document.getElementById('gcal-status');
+  if (!btn) return;
+  if (gcalConnected) {
+    btn.textContent = 'התנתק מ-Google Calendar';
+    btn.style.background = '#fee2e2';
+    btn.style.color = '#991b1b';
+    btn.onclick = disconnectGoogleCalendar;
+    if (status) { status.textContent = '✓ מחובר'; status.style.color = '#34d399'; }
+  } else {
+    btn.textContent = '📅 התחבר ל-Google Calendar';
+    btn.style.background = 'var(--gold)';
+    btn.style.color = 'var(--navy)';
+    btn.onclick = connectGoogleCalendar;
+    if (status) { status.textContent = 'לא מחובר'; status.style.color = 'rgba(255,255,255,0.4)'; }
+  }
+}
+
+// Sync a single task to Google Calendar
+async function syncTaskToCalendar(task) {
+  if (!gcalConnected || !gapiReady) return;
+  if (!task.date) return;
+
+  const savedIds = JSON.parse(localStorage.getItem('gcal_event_ids') || '{}');
+  const taskKey = task._key || task.id;
+  const proj = projectsCache.find(p => p._key === task.projectId || p.id === task.projectId);
+  const projName = proj ? `[${proj.name}] ` : '';
+
+  const event = {
+    summary: projName + task.title,
+    description: `אחראי: ${task.assignee}\nסטטוס: ${task.status}${task.notes ? '\n' + task.notes : ''}`,
+    start: { date: task.date },
+    end: { date: task.date },
+    colorId: '11', // tomato red
+    reminders: {
+      useDefault: false,
+      overrides: [
+        { method: 'email', minutes: 24 * 60 },
+        { method: 'popup', minutes: 60 }
+      ]
+    }
+  };
+
+  try {
+    if (savedIds[taskKey]) {
+      // Update existing
+      await gapi.client.calendar.events.update({
+        calendarId: 'primary',
+        eventId: savedIds[taskKey],
+        resource: event
+      });
+    } else {
+      // Create new
+      const resp = await gapi.client.calendar.events.insert({
+        calendarId: 'primary',
+        resource: event
+      });
+      savedIds[taskKey] = resp.result.id;
+      localStorage.setItem('gcal_event_ids', JSON.stringify(savedIds));
+    }
+  } catch(e) {
+    // Token expired – reconnect
+    if (e.status === 401) { gcalConnected = false; updateCalendarUI(); }
+  }
+}
+
+async function deleteTaskFromCalendar(taskId) {
+  if (!gcalConnected || !gapiReady) return;
+  const savedIds = JSON.parse(localStorage.getItem('gcal_event_ids') || '{}');
+  if (!savedIds[taskId]) return;
+  try {
+    await gapi.client.calendar.events.delete({
+      calendarId: 'primary',
+      eventId: savedIds[taskId]
+    });
+    delete savedIds[taskId];
+    localStorage.setItem('gcal_event_ids', JSON.stringify(savedIds));
+  } catch(e) {}
+}
+
+async function syncAllMyTasksToCalendar() {
+  if (!gcalConnected) return;
+  setSyncState('loading', 'מסנכרן ליומן...');
+  let count = 0;
+  for (const task of tasksCache) {
+    if (task.status !== 'הושלם' && task.date) {
+      await syncTaskToCalendar(task);
+      count++;
+    }
+    // Also sync subtasks
+    for (const sub of (task.subtasks || [])) {
+      if (!sub.done && sub.date) {
+        const subEvent = {
+          summary: `▸ ${sub.title} (${task.title})`,
+          description: `אחראי: ${sub.assignee}\nמשימה: ${task.title}`,
+          start: { date: sub.date },
+          end: { date: sub.date },
+          colorId: '9', // blueberry
+        };
+        try {
+          const savedIds = JSON.parse(localStorage.getItem('gcal_event_ids') || '{}');
+          const key = 'sub_' + (sub._key || sub.id);
+          if (!savedIds[key]) {
+            const resp = await gapi.client.calendar.events.insert({ calendarId: 'primary', resource: subEvent });
+            savedIds[key] = resp.result.id;
+            localStorage.setItem('gcal_event_ids', JSON.stringify(savedIds));
+          }
+        } catch(e) {}
+      }
+    }
+  }
+  setSyncState('ok', `מסונכרן ✓ ${new Date().toLocaleTimeString('he')}`);
+  toast(`✓ ${count} משימות נוספו ל-Google Calendar`);
+}
+
 // INIT
 loadAll();
+loadGoogleApi();
 </script>
 </body>
 </html>
